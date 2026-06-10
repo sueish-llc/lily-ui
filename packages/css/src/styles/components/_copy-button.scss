@@ -1,0 +1,64 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Copy button — copies a value to the clipboard, confirming with a check icon.
+// =============================================================================
+
+$root: '.#{cfg.class-name(copy-button)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  gap: fn.var-ref('space-2');
+  font: inherit;
+  line-height: 1;
+  color: fn.var-ref('color-fg-muted');
+  background-color: transparent;
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+  cursor: pointer;
+  transition: color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  @include mx.respect-reduced-motion {
+    transition: none;
+  }
+
+  @include mx.focus-ring;
+
+  &:hover {
+    color: fn.var-ref('color-fg-default');
+    border-color: fn.var-ref('color-border-strong');
+  }
+
+  // Sizes — icon-only buttons are square; labelled buttons get inline padding.
+  &--md {
+    block-size: fn.var-ref('control-h-md');
+    padding-inline: fn.var-ref('space-2');
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--sm {
+    block-size: fn.var-ref('control-h-sm');
+    padding-inline: fn.var-ref('space-1');
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &__icon {
+    flex: none;
+    inline-size: 1.2em;
+    block-size: 1.2em;
+  }
+
+  &__label {
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-medium');
+  }
+
+  // Confirmed state.
+  &--copied {
+    color: fn.var-ref('color-success-text');
+    border-color: fn.var-ref('color-success');
+  }
+}

@@ -1,0 +1,39 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// CloseButton — a standard dismiss control (×) used by Alert, Modal, Toast…
+// =============================================================================
+
+$root: '.#{cfg.class-name(close)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fn.var-ref('control-h-sm');
+  height: fn.var-ref('control-h-sm');
+  padding: 0;
+  font-size: fn.var-ref('text-xl');
+  line-height: 1;
+  color: fn.var-ref('color-fg-muted');
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: fn.var-ref('radius-sm');
+  transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  @include mx.focus-ring;
+
+  &:hover:not(:disabled) {
+    color: fn.var-ref('color-fg-default');
+    background-color: fn.var-ref('color-bg-subtle');
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

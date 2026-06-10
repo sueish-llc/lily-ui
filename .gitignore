@@ -1,0 +1,18 @@
+node_modules
+dist
+dist-pages
+storybook-static
+*.log
+.DS_Store
+coverage
+.vite
+.cache
+.turbo
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+
+# Claude Code: 共有設定は .claude/settings.json に置き、個人設定はこちら（コミットしない）
+.claude/settings.local.json
+CLAUDE.local.md

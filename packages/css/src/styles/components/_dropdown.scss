@@ -1,0 +1,69 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Dropdown — a toggleable menu.
+// =============================================================================
+
+$root: '.#{cfg.class-name(dropdown)}';
+
+#{$root} {
+  position: relative;
+  display: inline-block;
+
+  &__menu {
+    position: absolute;
+    z-index: fn.var-ref('z-dropdown');
+    min-width: fn.var-ref('size-xs');
+    max-width: calc(100vw - #{fn.var-ref('space-6')});
+    padding: fn.var-ref('space-1');
+    margin-top: fn.var-ref('space-1');
+    list-style: none;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    box-shadow: fn.var-ref('shadow-lg');
+
+    // Alignment.
+    &--end {
+      right: 0;
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__item {
+    display: block;
+    width: 100%;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-default');
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-sm');
+
+    @include mx.focus-ring;
+
+    &:hover,
+    &:focus {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      pointer-events: none;
+    }
+  }
+
+  &__divider {
+    height: fn.var-ref('border-thin');
+    margin: fn.var-ref('space-1') 0;
+    background-color: fn.var-ref('color-border-default');
+    border: 0;
+  }
+}

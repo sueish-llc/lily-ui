@@ -1,0 +1,122 @@
+// =============================================================================
+// @lily-ui/css — main stylesheet entry.
+// -----------------------------------------------------------------------------
+// Consumers import this once: `import '@lily-ui/css/styles';`
+//
+// Order matters: tokens/theme first (define the variables), then reset, then
+// utilities and component styles that consume them.
+//
+// Note: fonts (fonts.scss -> dist/fonts.css) are intentionally NOT included
+// here. See that file and docs/typography.md for the opt-in font setup.
+// =============================================================================
+
+// Abstracts are forwarded so SCSS consumers can `@use '@lily-ui/css/scss'`
+// and build on the same tokens/mixins.
+@forward 'abstracts/config';
+@forward 'abstracts/functions';
+@forward 'abstracts/mixins';
+@forward 'tokens/primitives';
+@use 'themes/root';
+@use 'themes/density';
+@use 'reset';
+@use 'utilities/generate';
+@use 'utilities/animations';
+@use 'utilities/effects';
+
+// Component styles
+@use 'components/container';
+@use 'components/grid';
+@use 'components/stack';
+@use 'components/button';
+@use 'components/close-button';
+@use 'components/copy-button';
+@use 'components/spinner';
+@use 'components/badge';
+@use 'components/ratio';
+@use 'components/table';
+@use 'components/alert';
+@use 'components/card';
+@use 'components/breadcrumb';
+@use 'components/pagination';
+@use 'components/progress';
+@use 'components/list-group';
+@use 'components/button-group';
+@use 'components/form';
+@use 'components/datepicker';
+@use 'components/collapse';
+@use 'components/accordion';
+@use 'components/nav';
+@use 'components/navbar';
+@use 'components/footer';
+@use 'components/dropdown';
+@use 'components/modal';
+@use 'components/offcanvas';
+@use 'components/drawer';
+@use 'components/toast';
+@use 'components/tooltip';
+@use 'components/carousel';
+
+// Primitives
+@use 'components/typography';
+@use 'components/link';
+@use 'components/icon';
+@use 'components/avatar';
+@use 'components/divider';
+@use 'components/chip';
+@use 'components/kbd';
+
+// Forms
+@use 'components/segmented';
+@use 'components/number-input';
+@use 'components/rating';
+@use 'components/pin-input';
+@use 'components/tag-input';
+@use 'components/file-upload';
+@use 'components/range-dual';
+@use 'components/combobox';
+
+// Navigation & feedback
+@use 'components/stepper';
+@use 'components/empty-state';
+@use 'components/stat';
+@use 'components/timeline';
+@use 'components/skeleton';
+@use 'components/meter';
+@use 'components/menu';
+@use 'components/back-top';
+@use 'components/affix';
+
+// Rich UX
+@use 'components/scroll-area';
+@use 'components/image';
+@use 'components/splitter';
+@use 'components/tree';
+@use 'components/calendar';
+@use 'components/transfer';
+@use 'components/color-picker';
+@use 'components/cascader';
+@use 'components/command-palette';
+
+// Date & time, a11y, overlays, data display, utilities
+@use 'components/date-time-picker';
+@use 'components/month-picker';
+@use 'components/time-zone-select';
+@use 'components/relative-time';
+@use 'components/countdown';
+@use 'components/duration-input';
+@use 'components/visually-hidden';
+@use 'components/alert-dialog';
+@use 'components/toolbar';
+@use 'components/fieldset';
+@use 'components/hover-card';
+@use 'components/context-menu';
+@use 'components/descriptions';
+@use 'components/result';
+@use 'components/float-button';
+@use 'components/code-block';
+@use 'components/mark';
+@use 'components/tree-select';
+@use 'components/watermark';
+
+// Theming helpers
+@use 'components/theme-override';

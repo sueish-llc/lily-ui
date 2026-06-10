@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../components/Home.astro';
+import { useTranslations } from '../../i18n/ui';
+const t = useTranslations('en');
+---
+
+<Base locale="en" title={t('site.name')} pagePath="">
+  <Home locale="en" />
+</Base>

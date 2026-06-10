@@ -1,0 +1,63 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Spinner — a loading indicator (border + grow variants).
+// =============================================================================
+
+$root: '.#{cfg.class-name(spinner)}';
+
+#{$root} {
+  display: inline-block;
+  width: fn.var-ref('space-6');
+  height: fn.var-ref('space-6');
+  vertical-align: middle;
+
+  &--sm {
+    width: fn.var-ref('space-4');
+    height: fn.var-ref('space-4');
+  }
+
+  &--lg {
+    width: fn.var-ref('space-10');
+    height: fn.var-ref('space-10');
+  }
+
+  // Border (default) variant.
+  &--border {
+    border: fn.var-ref('border-thick') solid currentcolor;
+    border-right-color: transparent;
+    border-radius: fn.var-ref('radius-circle');
+    animation: lily-spinner-rotate fn.var-ref('duration-slow') linear infinite;
+  }
+
+  // Grow variant (pulsing dot).
+  &--grow {
+    background-color: currentcolor;
+    border-radius: fn.var-ref('radius-circle');
+    opacity: 0;
+    animation: lily-spinner-grow fn.var-ref('duration-slow') linear infinite;
+  }
+
+  @include mx.respect-reduced-motion {
+    animation-duration: calc(fn.var-ref('duration-slow') * 6);
+  }
+}
+
+@keyframes lily-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lily-spinner-grow {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: none;
+  }
+}

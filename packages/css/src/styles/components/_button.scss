@@ -1,0 +1,175 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Button component styles
+// -----------------------------------------------------------------------------
+// Pure CSS: any framework (or plain HTML) can use `.lily-button` + modifiers.
+// @lily-ui/react simply renders these class names with the right semantics.
+// =============================================================================
+
+$root: '.#{cfg.class-name(button)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: fn.var-ref('space-2');
+  font-family: fn.var-ref('font-sans');
+  font-weight: fn.var-ref('weight-bold');
+  line-height: fn.var-ref('leading-tight');
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  border: fn.var-ref('border-thin') solid transparent;
+  border-radius: fn.var-ref('radius-md');
+  transition:
+    background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+    color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+    border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  @include mx.focus-ring;
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // --- Sizes ---------------------------------------------------------------
+  &--sm {
+    height: fn.var-ref('control-h-sm');
+    padding-inline: fn.var-ref('space-3');
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &--md {
+    height: fn.var-ref('control-h-md');
+    padding-inline: fn.var-ref('space-4');
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--lg {
+    height: fn.var-ref('control-h-lg');
+    padding-inline: fn.var-ref('space-6');
+    font-size: fn.var-ref('text-lg');
+  }
+
+  // --- Full width ----------------------------------------------------------
+  &--block {
+    width: 100%;
+  }
+
+  // --- Variants ------------------------------------------------------------
+  // `solid` filled, `outline` bordered, `ghost` text-only, `link` inline link.
+  &--solid {
+    color: fn.var-ref('color-on-primary');
+    background-color: fn.var-ref('color-primary');
+
+    &:hover:not(:disabled) {
+      background-color: fn.var-ref('color-primary-hover');
+    }
+
+    &:active:not(:disabled) {
+      background-color: fn.var-ref('color-primary-active');
+    }
+  }
+
+  // Text-on-surface variants use the AAA-calibrated `*-text` token (>= 7:1 on
+  // canvas/surface, per docs/accessibility.md) — the vivid `color-primary` is a
+  // fill colour and is only AA as text/border on light surfaces (notably the
+  // amber `warning`, ~2.3:1). The border matches the text so it also clears 3:1.
+  &--outline {
+    color: fn.var-ref('color-primary-text');
+    background-color: transparent;
+    border-color: fn.var-ref('color-primary-text');
+
+    // On hover the background becomes a status tint, so the text switches to
+    // neutral fg-default to keep 7:1 on every status in both themes (AAA).
+    &:hover:not(:disabled) {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-primary-subtle');
+    }
+  }
+
+  &--ghost {
+    color: fn.var-ref('color-primary-text');
+    background-color: transparent;
+
+    &:hover:not(:disabled) {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-primary-subtle');
+    }
+  }
+
+  &--link {
+    height: auto;
+    padding: 0;
+    color: fn.var-ref('color-primary-text');
+    background: transparent;
+    border: 0;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  // --- Status color overrides (data attribute keeps class count low) -------
+  // The component sets `data-status`; we remap the primary vars per status so
+  // every variant inherits the correct palette without bespoke rules.
+  &[data-status='danger'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-danger')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-danger-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-danger-hover')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-danger-subtle')};
+    --#{cfg.$prefix}-color-primary-text: #{fn.var-ref('color-danger-text')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-danger')};
+  }
+
+  &[data-status='success'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-success')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-success-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-success-hover')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-success-subtle')};
+    --#{cfg.$prefix}-color-primary-text: #{fn.var-ref('color-success-text')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-success')};
+  }
+
+  &[data-status='warning'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-warning')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-warning-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-warning-hover')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-warning-subtle')};
+    --#{cfg.$prefix}-color-primary-text: #{fn.var-ref('color-warning-text')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-warning')};
+  }
+
+  &[data-status='neutral'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-fg-default')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-fg-muted')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-fg-muted')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-bg-subtle')};
+    --#{cfg.$prefix}-color-primary-text: #{fn.var-ref('color-fg-default')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-bg-surface')};
+  }
+
+  // --- Loading spinner -----------------------------------------------------
+  &__spinner {
+    width: 1em;
+    height: 1em;
+    border: fn.var-ref('border-thick') solid currentcolor;
+    border-top-color: transparent;
+    border-radius: fn.var-ref('radius-circle');
+    animation: lily-button-spin fn.var-ref('duration-slow') linear infinite;
+
+    @include mx.respect-reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes lily-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

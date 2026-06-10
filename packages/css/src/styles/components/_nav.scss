@@ -1,0 +1,73 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Nav & Tabs — navigation lists and a tabbed interface.
+// =============================================================================
+
+$root: '.#{cfg.class-name(nav)}';
+
+#{$root} {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-1');
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__link {
+    display: block;
+    padding: fn.var-ref('space-2') fn.var-ref('space-4');
+    color: fn.var-ref('color-primary');
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-md');
+
+    @include mx.focus-ring;
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      pointer-events: none;
+    }
+  }
+
+  // Tabs variant.
+  &--tabs {
+    gap: 0;
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &--tabs &__link {
+    margin-bottom: calc(-1 * #{fn.var-ref('border-thin')});
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-md') fn.var-ref('radius-md') 0 0;
+
+    &[aria-selected='true'] {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-bg-surface');
+      border-color: fn.var-ref('color-border-default');
+      border-bottom-color: fn.var-ref('color-bg-surface');
+    }
+  }
+
+  // Pills variant.
+  &--pills &__link[aria-selected='true'] {
+    color: fn.var-ref('color-on-primary');
+    background-color: fn.var-ref('color-primary');
+  }
+}
+
+.#{cfg.class-name(tab-panel)} {
+  padding: fn.var-ref('space-4') 0;
+
+  &[hidden] {
+    display: none;
+  }
+}

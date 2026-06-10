@@ -1,0 +1,75 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Result — a status/result feedback block (success, error, info, warning, etc.).
+// Mirrors EmptyState's centered structure; uses icon + text for status so
+// meaning is conveyed beyond color alone.
+// =============================================================================
+
+$root: '.#{cfg.class-name(result)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-3');
+  align-items: center;
+  padding: fn.var-ref('space-12') fn.var-ref('space-6');
+  text-align: center;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: fn.var-ref('size-xs');
+    max-inline-size: 100%;
+    font-size: fn.var-ref('text-5xl');
+  }
+
+  &__title {
+    margin: 0;
+    font-size: fn.var-ref('text-xl');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__description {
+    max-inline-size: fn.var-ref('size-md');
+    margin: 0;
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: center;
+    margin-block-start: fn.var-ref('space-2');
+  }
+
+  // Status-specific icon colors (icon + text combination, not color-only)
+  &--success &__icon {
+    color: fn.var-ref('color-success-text');
+  }
+
+  &--error &__icon {
+    color: fn.var-ref('color-danger-text');
+  }
+
+  &--warning &__icon {
+    color: fn.var-ref('color-warning-text');
+  }
+
+  &--info &__icon {
+    color: fn.var-ref('color-info-text');
+  }
+
+  // 404 / 403 / 500 use the default muted color; the icon glyph itself
+  // differentiates each status.
+  &--\34 04 &__icon,
+  &--\34 03 &__icon,
+  &--\35 00 &__icon {
+    color: fn.var-ref('color-fg-subtle');
+  }
+}

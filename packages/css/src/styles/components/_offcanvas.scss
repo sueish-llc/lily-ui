@@ -1,0 +1,68 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Offcanvas — a panel that slides in from a screen edge.
+// =============================================================================
+
+$root: '.#{cfg.class-name(offcanvas)}';
+
+#{$root} {
+  position: fixed;
+  z-index: fn.var-ref('z-offcanvas');
+  display: flex;
+  flex-direction: column;
+  background-color: fn.var-ref('color-bg-surface');
+  box-shadow: fn.var-ref('shadow-xl');
+  transition: transform fn.var-ref('duration-base') fn.var-ref('ease-standard');
+
+  @include mx.respect-reduced-motion {
+    transition: none;
+  }
+
+  // Placements. Side panels take a fixed size but never exceed the viewport
+  // (capped at 100vw - a margin so a sliver of the backdrop stays tappable).
+  &--start {
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-12')}));
+  }
+
+  &--end {
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-12')}));
+  }
+
+  &--top {
+    inset-inline: 0;
+    inset-block-start: 0;
+    height: 30vh;
+  }
+
+  &--bottom {
+    inset-inline: 0;
+    inset-block-end: 0;
+    height: 30vh;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: fn.var-ref('space-4');
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__title {
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: fn.var-ref('space-4');
+    overflow-y: auto;
+  }
+}

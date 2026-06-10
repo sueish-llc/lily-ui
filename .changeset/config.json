@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    [
+      "@lily-ui/css",
+      "@lily-ui/react",
+      "@lily-ui/vue",
+      "@lily-ui/web-components"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@lily-ui/storybook",
+    "@lily-ui/docs"
+  ]
+}

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# CI only reads the repository; no write access for the GITHUB_TOKEN.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Required gate: the checks that must stay green on every PR.
+  # ---------------------------------------------------------------------------
+  verify:
+    name: lint + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      # Lint + CSS build are pure JS/sass and don't need Temporal, so we run
+      # them on a released LTS for a reliably-green gate. (Runtime target is
+      # Node 26 — see the informational job and .nvmrc.)
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (eslint + stylelint)
+        run: pnpm lint
+
+      - name: Build design tokens (@lily-ui/css)
+        run: pnpm --filter @lily-ui/css build
+
+  # ---------------------------------------------------------------------------
+  # Informational: typecheck + tests of @lily-ui/react depend on native
+  # Temporal (Node 26+). Kept non-blocking until Node 26 is GA on runners.
+  # ---------------------------------------------------------------------------
+  typecheck-test:
+    name: typecheck + test (Node 26 pending)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test (unit + a11y)
+        run: pnpm test

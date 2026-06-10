@@ -1,0 +1,64 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Container — centers content and constrains its max-width per breakpoint.
+// -----------------------------------------------------------------------------
+// `.lily-container`        : responsive max-width (steps up at each breakpoint)
+// `.lily-container--fluid` : always 100% width
+// `.lily-container--{bp}`  : fluid until {bp}, then capped
+// =============================================================================
+
+$root: '.#{cfg.class-name(container)}';
+
+// Max-width per breakpoint (skips xs=0, which stays fluid).
+$_max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  '2xl': 1320px,
+);
+
+@mixin _base {
+  width: 100%;
+  padding-inline: fn.var-ref('space-4');
+  margin-inline: auto;
+}
+
+#{$root} {
+  @include _base;
+
+  @each $bp, $width in $_max-widths {
+    @include mx.breakpoint-up($bp) {
+      max-width: $width;
+    }
+  }
+}
+
+#{$root}--fluid {
+  @include _base;
+}
+
+// Fluid until the named breakpoint, then capped at each larger step.
+@each $bp, $width in $_max-widths {
+  #{$root}--#{$bp} {
+    @include _base;
+
+    $reached: false;
+
+    @each $inner-bp, $inner-width in $_max-widths {
+      @if $inner-bp == $bp {
+        $reached: true;
+      }
+
+      @if $reached {
+        @include mx.breakpoint-up($inner-bp) {
+          max-width: $inner-width;
+        }
+      }
+    }
+  }
+}

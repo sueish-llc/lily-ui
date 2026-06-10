@@ -1,0 +1,39 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Mark — highlights a text run with a semantic-color background using the
+// native <mark> element. The highlight is decorative; meaning lives in the text.
+// =============================================================================
+
+$root: '.#{cfg.class-name(mark)}';
+
+#{$root} {
+  padding-block: 0.1em;
+  padding-inline: 0.2em;
+  border-radius: fn.var-ref('radius-sm');
+
+  // Default: warning amber — the browser's native highlight color is overridden.
+  background-color: fn.var-ref('color-warning-subtle');
+  color: inherit;
+
+  &--warning {
+    background-color: fn.var-ref('color-warning-subtle');
+  }
+
+  &--success {
+    background-color: fn.var-ref('color-success-subtle');
+  }
+
+  &--info {
+    background-color: fn.var-ref('color-info-subtle');
+  }
+
+  &--danger {
+    background-color: fn.var-ref('color-danger-subtle');
+  }
+
+  &--primary {
+    background-color: fn.var-ref('color-primary-subtle');
+  }
+}

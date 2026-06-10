@@ -1,0 +1,103 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Avatar — a user/entity thumbnail with image, initials fallback, and an
+// optional presence dot. AvatarGroup overlaps several into a stack.
+// -----------------------------------------------------------------------------
+// Initials use the subtle surface + default fg pairing, which is AAA in both
+// themes. The presence dot conveys state by `data-status`; consumers pair it
+// with a visually-hidden label so meaning is never color-only.
+// =============================================================================
+
+$root: '.#{cfg.class-name(avatar)}';
+
+#{$root} {
+  --#{cfg.$prefix}-avatar-size: #{fn.var-ref('control-h-md')};
+
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--#{cfg.$prefix}-avatar-size);
+  block-size: var(--#{cfg.$prefix}-avatar-size);
+  overflow: hidden;
+  font-size: fn.var-ref('text-sm');
+  font-weight: fn.var-ref('weight-bold');
+  line-height: 1;
+  color: fn.var-ref('color-fg-default');
+  text-transform: uppercase;
+  user-select: none;
+  background-color: fn.var-ref('color-bg-subtle');
+  border-radius: fn.var-ref('radius-circle');
+
+  &--sm {
+    --#{cfg.$prefix}-avatar-size: #{fn.var-ref('control-h-sm')};
+
+    font-size: fn.var-ref('text-xs');
+  }
+
+  &--lg {
+    --#{cfg.$prefix}-avatar-size: #{fn.var-ref('control-h-lg')};
+
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--square {
+    border-radius: fn.var-ref('radius-md');
+  }
+
+  &__img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  // Presence dot. `overflow: visible` lets it sit on the avatar edge.
+  &:has(> #{$root}__status) {
+    overflow: visible;
+  }
+
+  &__status {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    inline-size: 30%;
+    block-size: 30%;
+    background-color: fn.var-ref('color-fg-subtle');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-bg-surface');
+    border-radius: fn.var-ref('radius-circle');
+
+    &[data-status='success'] {
+      background-color: fn.var-ref('color-success');
+    }
+
+    &[data-status='warning'] {
+      background-color: fn.var-ref('color-warning');
+    }
+
+    &[data-status='danger'] {
+      background-color: fn.var-ref('color-danger');
+    }
+
+    &[data-status='info'] {
+      background-color: fn.var-ref('color-info');
+    }
+  }
+}
+
+// AvatarGroup — overlap a row of avatars; each gets a surface-colored ring so
+// the stack reads cleanly on any background.
+#{'.#{cfg.class-name(avatar-group)}'} {
+  display: inline-flex;
+  align-items: center;
+
+  #{$root} {
+    box-shadow: 0 0 0 fn.var-ref('border-thick') fn.var-ref('color-bg-surface');
+  }
+
+  #{$root}:not(:first-child) {
+    margin-inline-start: calc(-0.35 * var(--#{cfg.$prefix}-avatar-size, #{fn.var-ref('control-h-md')}));
+  }
+}

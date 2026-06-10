@@ -1,0 +1,28 @@
+@use '../abstracts/config' as cfg;
+
+// =============================================================================
+// Ratio — maintain an aspect ratio for embedded content (video, iframe…).
+// -----------------------------------------------------------------------------
+// The aspect ratio is set via the `--lily-aspect-ratio` custom property; the
+// React component computes it from a `ratio` prop.
+// =============================================================================
+
+$root: '.#{cfg.class-name(ratio)}';
+
+#{$root} {
+  position: relative;
+  width: 100%;
+
+  &::before {
+    display: block;
+    padding-top: var(--#{cfg.$prefix}-aspect-ratio, 56.25%);
+    content: '';
+  }
+
+  > * {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

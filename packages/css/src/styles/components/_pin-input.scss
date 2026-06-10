@@ -1,0 +1,52 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// PinInput — a row of single-character fields for codes / OTP. Each cell is a
+// native input; the component handles auto-advance, backspace, and paste.
+// =============================================================================
+
+$root: '.#{cfg.class-name(pin-input)}';
+
+#{$root} {
+  display: inline-flex;
+  gap: fn.var-ref('space-2');
+
+  &__field {
+    inline-size: fn.var-ref('control-h-md');
+    block-size: fn.var-ref('control-h-md');
+    padding: 0;
+    font-size: fn.var-ref('text-xl');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+    text-align: center;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    transition: border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:focus-visible {
+      border-color: fn.var-ref('color-border-focus');
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: calc(-1 * #{fn.var-ref('border-thin')});
+    }
+
+    &:disabled {
+      color: fn.var-ref('color-fg-subtle');
+      background-color: fn.var-ref('color-bg-subtle');
+      cursor: not-allowed;
+    }
+  }
+
+  &--sm &__field {
+    inline-size: fn.var-ref('control-h-sm');
+    block-size: fn.var-ref('control-h-sm');
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--lg &__field {
+    inline-size: fn.var-ref('control-h-lg');
+    block-size: fn.var-ref('control-h-lg');
+    font-size: fn.var-ref('text-2xl');
+  }
+}

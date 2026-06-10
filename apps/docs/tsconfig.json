@@ -1,0 +1,21 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "types": ["astro/client"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    // Resolve the sibling Lily packages from source so the playground islands
+    // typecheck without first building each package's `dist/` (CI's typecheck
+    // job does not build). Mirrors apps/storybook.
+    "paths": {
+      "@lily-ui/react": ["../../packages/react/src/index.ts"],
+      "@lily-ui/vue": ["../../packages/vue/src/index.ts"],
+      "@lily-ui/web-components": ["../../packages/web-components/src/index.ts"]
+    }
+  },
+  "include": [".astro/types.d.ts", "temporal-global.d.ts", "src", "scripts", "astro.config.mjs"],
+  "exclude": ["dist"]
+}

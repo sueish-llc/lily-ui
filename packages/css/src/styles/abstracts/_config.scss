@@ -1,0 +1,35 @@
+// =============================================================================
+// Global configuration
+// -----------------------------------------------------------------------------
+// Single place for cross-cutting knobs. Nothing here is a "magic number" used
+// inline elsewhere — every value is named and consumed by reference.
+// =============================================================================
+
+/// Prefix applied to every emitted CSS custom property and utility class, so
+/// the library never collides with a consumer's own styles.
+$prefix: 'lily' !default;
+
+/// Root font size assumption used by the `rem()` helper. 16px is the browser
+/// default; we never hard-code it anywhere but here.
+$root-font-size: 16px !default;
+
+/// The attribute used to switch themes at runtime, e.g. <html data-theme="dark">.
+$theme-attribute: 'data-theme' !default;
+
+/// The attribute used to switch density per subtree, e.g.
+/// <body data-density="compact">. See themes/_density.scss.
+$density-attribute: 'data-density' !default;
+
+/// The attribute used to switch the motion tier at runtime, e.g.
+/// <html data-motion="minimal">. Independent of `prefers-reduced-motion`
+/// (the a11y axis); this is the performance/quality axis. See
+/// utilities/_animations.scss.
+$motion-attribute: 'data-motion' !default;
+
+@function css-var-name($name) {
+  @return --#{$prefix}-#{$name};
+}
+
+@function class-name($name) {
+  @return #{$prefix}-#{$name};
+}

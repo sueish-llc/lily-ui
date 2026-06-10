@@ -1,0 +1,87 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Timeline — a vertical list of events (history / activity feed). A dot marks
+// each item with a connecting rail; `data-status` recolors the dot.
+// =============================================================================
+
+$root: '.#{cfg.class-name(timeline)}';
+
+#{$root} {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__item {
+    position: relative;
+    display: flex;
+    gap: fn.var-ref('space-3');
+    padding-block-end: fn.var-ref('space-5');
+
+    // Connecting rail (skip the last item).
+    &:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      inset-block: fn.var-ref('space-4') 0;
+      inset-inline-start: calc(0.5 * #{fn.var-ref('space-3')});
+      inline-size: fn.var-ref('border-thin');
+      background-color: fn.var-ref('color-border-default');
+    }
+  }
+
+  &__dot {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    inline-size: fn.var-ref('space-3');
+    block-size: fn.var-ref('space-3');
+    margin-block-start: fn.var-ref('space-1');
+    background-color: fn.var-ref('color-border-strong');
+    border: fn.var-ref('border-thick') solid fn.var-ref('color-bg-canvas');
+    border-radius: fn.var-ref('radius-circle');
+    box-sizing: content-box;
+
+    &[data-status='primary'] {
+      background-color: fn.var-ref('color-primary');
+    }
+
+    &[data-status='success'] {
+      background-color: fn.var-ref('color-success');
+    }
+
+    &[data-status='warning'] {
+      background-color: fn.var-ref('color-warning');
+    }
+
+    &[data-status='danger'] {
+      background-color: fn.var-ref('color-danger');
+    }
+
+    &[data-status='info'] {
+      background-color: fn.var-ref('color-info');
+    }
+  }
+
+  &__content {
+    flex: 1 1 auto;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: fn.var-ref('text-md');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__time {
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__description {
+    margin-block-start: fn.var-ref('space-1');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-muted');
+  }
+}

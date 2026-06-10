@@ -1,0 +1,71 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// AlertDialog — a confirmation dialog that reuses modal layout tokens.
+//
+// Shares the backdrop and box structure with lily-modal. Status variants tint
+// the header accent bar to reinforce the intent (danger, warning, …).
+// =============================================================================
+
+$root: '.#{cfg.class-name(alert-dialog)}';
+
+// The backdrop and animation classes are shared with lily-modal; no extra rules
+// needed for .lily-backdrop itself.
+
+#{$root} {
+  z-index: fn.var-ref('z-modal');
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: fn.var-ref('size-sm'); // alert dialogs are deliberately compact
+  max-height: calc(100vh - #{fn.var-ref('space-12')});
+  overflow: hidden;
+  background-color: fn.var-ref('color-bg-surface');
+  border-radius: fn.var-ref('radius-lg');
+  box-shadow: fn.var-ref('shadow-xl');
+
+  &__header {
+    display: flex;
+    gap: fn.var-ref('space-3');
+    align-items: center;
+    padding: fn.var-ref('space-4');
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    font-size: fn.var-ref('text-xl');
+    line-height: 1;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: fn.var-ref('space-4');
+    overflow-y: auto;
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: fn.var-ref('space-2');
+    justify-content: flex-end;
+    padding: fn.var-ref('space-4');
+    border-top: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  // ── Status modifiers ──────────────────────────────────────────────────────
+
+  &--danger #{$root}__icon   { color: fn.var-ref('color-danger'); }
+  &--warning #{$root}__icon  { color: fn.var-ref('color-warning'); }
+  &--success #{$root}__icon  { color: fn.var-ref('color-success'); }
+  &--info #{$root}__icon     { color: fn.var-ref('color-info'); }
+}

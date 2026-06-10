@@ -1,0 +1,269 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Date-time picker — a text field paired with a calendar popup that also holds
+// hour/minute steppers. Mirrors the DatePicker layout (rendered entirely from
+// standard CSS, no native control) and adds a time row below the grid. Date
+// logic is driven by the Temporal API in the framework layer.
+// =============================================================================
+
+$root: '.#{cfg.class-name(date-time-picker)}';
+
+#{$root} {
+  position: relative;
+  display: inline-block;
+
+  // --- Field: text input + calendar toggle, sharing one bordered box --------
+  &__field {
+    display: inline-flex;
+    align-items: stretch;
+    width: 100%;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+    border-radius: fn.var-ref('radius-md');
+    transition: border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:focus-within {
+      border-color: fn.var-ref('color-border-focus');
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: fn.var-ref('border-thick');
+    }
+  }
+
+  &--invalid #{$root}__field {
+    border-color: fn.var-ref('color-danger');
+  }
+
+  &--disabled #{$root}__field {
+    cursor: not-allowed;
+    background-color: fn.var-ref('color-bg-subtle');
+    opacity: 0.7;
+  }
+
+  &__input {
+    flex: 1 1 auto;
+    min-width: fn.rem(160px);
+    height: fn.var-ref('control-h-md');
+    padding: 0 fn.var-ref('space-3');
+    font-family: fn.var-ref('font-sans');
+    font-size: fn.var-ref('text-md');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: inherit;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: fn.var-ref('color-fg-subtle');
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // Size variants map to the shared control height tokens.
+  &--sm #{$root}__input,
+  &--sm #{$root}__toggle {
+    height: fn.var-ref('control-h-sm');
+  }
+
+  &--lg #{$root}__input,
+  &--lg #{$root}__toggle {
+    height: fn.var-ref('control-h-lg');
+  }
+
+  &__toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: fn.var-ref('control-h-md');
+    color: fn.var-ref('color-fg-muted');
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: inherit;
+    transition: color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not(:disabled) {
+      color: fn.var-ref('color-primary');
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // --- Calendar popup -------------------------------------------------------
+  &__popup {
+    position: absolute;
+    inset-block-start: calc(100% + #{fn.var-ref('space-1')});
+    inset-inline-start: 0;
+    z-index: fn.var-ref('z-popover');
+    width: max-content;
+    max-width: calc(100vw - #{fn.var-ref('space-6')});
+    padding: fn.var-ref('space-3');
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-lg');
+    box-shadow: fn.var-ref('shadow-lg');
+
+    &--end {
+      inset-inline: auto 0;
+    }
+  }
+
+  &__header {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: fn.var-ref('space-2');
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: fn.var-ref('text-md');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+    text-align: center;
+  }
+
+  &__nav {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: fn.rem(32px);
+    height: fn.rem(32px);
+    color: fn.var-ref('color-fg-muted');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-md');
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not(:disabled) {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__grid {
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0;
+      text-align: center;
+    }
+  }
+
+  &__weekday {
+    width: fn.rem(36px);
+    height: fn.rem(28px);
+    font-size: fn.var-ref('text-xs');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__day {
+    width: fn.rem(36px);
+    height: fn.rem(36px);
+    font-family: fn.var-ref('font-sans');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-md');
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not([aria-disabled='true']) {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &--outside {
+      color: fn.var-ref('color-fg-subtle');
+    }
+
+    &--today {
+      font-weight: fn.var-ref('weight-bold');
+
+      &::after {
+        display: block;
+        width: fn.rem(4px);
+        height: fn.rem(4px);
+        margin: 1px auto 0;
+        content: '';
+        background-color: fn.var-ref('color-primary');
+        border-radius: fn.var-ref('radius-pill');
+      }
+    }
+
+    &--selected {
+      color: fn.var-ref('color-on-primary');
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+
+      &:hover {
+        background-color: fn.var-ref('color-primary-hover');
+      }
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+  }
+
+  // --- Time row (hour / minute steppers) ------------------------------------
+  &__time {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: center;
+    margin-top: fn.var-ref('space-3');
+    padding-top: fn.var-ref('space-3');
+    border-top: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__time-sep {
+    color: fn.var-ref('color-fg-muted');
+  }
+}
+
+// Keep today's dot visible on the selected (filled) day.
+#{$root}__day--selected#{$root}__day--today::after {
+  background-color: fn.var-ref('color-on-primary');
+}
+
+// Honor users who prefer reduced motion.
+@include mx.respect-reduced-motion {
+  #{$root}__field,
+  #{$root}__toggle,
+  #{$root}__nav,
+  #{$root}__day {
+    transition: none;
+  }
+}

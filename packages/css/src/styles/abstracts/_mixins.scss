@@ -1,0 +1,159 @@
+@use 'sass:map';
+@use 'sass:list';
+@use 'config' as cfg;
+@use 'functions' as fn;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Mixins
+// =============================================================================
+
+/// Emit a flat semantic map as CSS custom properties.
+@mixin emit-vars($map) {
+  @each $name, $value in $map {
+    #{cfg.css-var-name($name)}: #{$value};
+  }
+}
+
+/// Emit primitive scales (spacing, radius, typography, ...) as CSS custom
+/// properties so they are available to both library and consumer code.
+@mixin emit-primitive-vars() {
+  // Spacing
+  @each $key, $value in p.$spacing {
+    #{cfg.css-var-name('space-#{$key}')}: #{$value};
+  }
+
+  // Radius
+  @each $key, $value in p.$radius {
+    #{cfg.css-var-name('radius-#{$key}')}: #{$value};
+  }
+
+  // Border width
+  @each $key, $value in p.$border-width {
+    #{cfg.css-var-name('border-#{$key}')}: #{$value};
+  }
+
+  // Font families
+  @each $key, $value in p.$font-family {
+    #{cfg.css-var-name('font-#{$key}')}: #{$value};
+  }
+
+  // Font size
+  @each $key, $value in p.$font-size {
+    #{cfg.css-var-name('text-#{$key}')}: #{$value};
+  }
+
+  // Font weight
+  @each $key, $value in p.$font-weight {
+    #{cfg.css-var-name('weight-#{$key}')}: #{$value};
+  }
+
+  // Line height
+  @each $key, $value in p.$line-height {
+    #{cfg.css-var-name('leading-#{$key}')}: #{$value};
+  }
+
+  // Letter spacing
+  @each $key, $value in p.$letter-spacing {
+    #{cfg.css-var-name('tracking-#{$key}')}: #{$value};
+  }
+
+  // Shadows
+  @each $key, $value in p.$shadow {
+    #{cfg.css-var-name('shadow-#{$key}')}: #{$value};
+  }
+
+  // Motion
+  @each $key, $value in p.$duration {
+    #{cfg.css-var-name('duration-#{$key}')}: #{$value};
+  }
+
+  @each $key, $value in p.$easing {
+    #{cfg.css-var-name('ease-#{$key}')}: #{$value};
+  }
+
+  // Z-index
+  @each $key, $value in p.$z-index {
+    #{cfg.css-var-name('z-#{$key}')}: #{$value};
+  }
+
+  // Control heights
+  @each $key, $value in p.$control-height {
+    #{cfg.css-var-name('control-h-#{$key}')}: #{$value};
+  }
+
+  // Component sizes (panel/overlay widths, menu min-widths, …)
+  @each $key, $value in p.$size {
+    #{cfg.css-var-name('size-#{$key}')}: #{$value};
+  }
+}
+
+/// Emit the raw palette ramps as `--lily-color-<role>-<step>` custom properties
+/// (theme-agnostic). Exposes the underlying scale for tooling and one-offs;
+/// components should still prefer the semantic `--lily-color-*` tokens.
+$_palette-roles: (
+  'brand': 'primary',
+  'neutral': 'neutral',
+  'fuji': 'accent',
+  'sakura': 'sakura',
+  'red': 'danger',
+  'amber': 'warning',
+  'green': 'success',
+  'blue': 'info',
+);
+
+@mixin emit-palette-vars() {
+  @each $ramp, $steps in p.$palette {
+    $role: map.get($_palette-roles, $ramp);
+
+    @if $role == null {
+      $role: $ramp;
+    }
+
+    @each $step, $hex in $steps {
+      #{cfg.css-var-name('color-#{$role}-#{$step}')}: #{$hex};
+    }
+  }
+}
+
+/// Mobile-first media query by named breakpoint.
+@mixin breakpoint-up($name) {
+  $value: fn.token(p.$breakpoint, $name);
+
+  @if $value == 0 {
+    @content;
+  } @else {
+    @media (min-width: $value) {
+      @content;
+    }
+  }
+}
+
+/// A consistent, visible-on-keyboard focus ring that satisfies WCAG 2.4.7.
+/// Uses :focus-visible so a mouse click does not show the ring.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: fn.token(p.$border-width, thick) solid fn.var-ref('color-focus-ring');
+    outline-offset: fn.token(p.$border-width, thick);
+  }
+}
+
+/// Visually hide content while keeping it available to assistive tech.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/// Respect users who request reduced motion (WCAG 2.3.3).
+@mixin respect-reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

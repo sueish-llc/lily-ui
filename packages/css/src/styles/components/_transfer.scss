@@ -1,0 +1,66 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Transfer — two list boxes with controls to move items between a source and a
+// target list. Each row is a labeled checkbox.
+// =============================================================================
+
+$root: '.#{cfg.class-name(transfer)}';
+
+#{$root} {
+  display: flex;
+  gap: fn.var-ref('space-3');
+  align-items: center;
+
+  &__list {
+    flex: 1 1 0;
+    min-inline-size: fn.var-ref('size-xs');
+    overflow: hidden;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+  }
+
+  &__header {
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-default');
+    background-color: fn.var-ref('color-bg-subtle');
+    border-block-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__items {
+    max-block-size: fn.var-ref('size-sm');
+    padding: fn.var-ref('space-1');
+    margin: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    padding: fn.var-ref('space-1') fn.var-ref('space-2');
+    border-radius: fn.var-ref('radius-sm');
+    cursor: pointer;
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &:has(input:focus-visible) {
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: calc(-1 * #{fn.var-ref('border-thin')});
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: fn.var-ref('space-2');
+  }
+}

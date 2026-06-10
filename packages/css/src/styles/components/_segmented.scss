@@ -1,0 +1,73 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// SegmentedControl — a single-select toggle group (iOS-style). Built on native
+// radio inputs so selection, grouping, and arrow-key navigation are free and
+// accessible; the inputs are visually hidden and the labels are the segments.
+// =============================================================================
+
+$root: '.#{cfg.class-name(segmented)}';
+
+#{$root} {
+  display: inline-flex;
+  gap: fn.var-ref('space-px');
+  padding: fn.var-ref('space-1');
+  background-color: fn.var-ref('color-bg-subtle');
+  border-radius: fn.var-ref('radius-md');
+
+  &--block {
+    display: flex;
+    width: 100%;
+  }
+
+  &__option {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(#{fn.var-ref('control-h-md')} - #{fn.var-ref('space-2')});
+    padding-block: fn.var-ref('space-1');
+    padding-inline: fn.var-ref('space-3');
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-muted');
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: calc(#{fn.var-ref('radius-md')} - #{fn.var-ref('space-1')});
+    transition: color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:hover {
+      color: fn.var-ref('color-fg-default');
+    }
+
+    // Selected segment: a raised surface tile.
+    &:has(input:checked) {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-bg-surface');
+      box-shadow: fn.var-ref('shadow-sm');
+    }
+
+    &:has(input:focus-visible) {
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: fn.var-ref('border-thick');
+    }
+
+    &:has(input:disabled) {
+      color: fn.var-ref('color-fg-subtle');
+      cursor: not-allowed;
+    }
+  }
+
+  &--sm &__option {
+    min-height: calc(#{fn.var-ref('control-h-sm')} - #{fn.var-ref('space-2')});
+    font-size: fn.var-ref('text-xs');
+  }
+
+  &--lg &__option {
+    min-height: calc(#{fn.var-ref('control-h-lg')} - #{fn.var-ref('space-2')});
+    font-size: fn.var-ref('text-md');
+  }
+}

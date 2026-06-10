@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import FoundationDetail from '../../components/FoundationDetail.astro';
+import { foundations, getFoundation } from '../../registry/foundations';
+
+export function getStaticPaths() {
+  return foundations.map((f) => ({ params: { id: f.id } }));
+}
+
+const { id } = Astro.params;
+const foundation = getFoundation(id!);
+if (!foundation) return Astro.redirect('/404');
+---
+
+<Base
+  locale="ja"
+  title={foundation.title.ja}
+  description={foundation.summary.ja}
+  pagePath={`foundations/${foundation.id}/`}
+>
+  <FoundationDetail locale="ja" foundation={foundation} />
+</Base>

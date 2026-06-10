@@ -1,0 +1,64 @@
+---
+import Sidebar from './Sidebar.astro';
+import { useTranslations, type Locale } from '../i18n/ui';
+import { localePath } from '../i18n/paths';
+import { categoryGroups, foundationComponents, localizedSummary } from '../registry';
+import { foundations } from '../registry/foundations';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const groups = categoryGroups(locale);
+---
+
+<div class="doc-shell">
+  <Sidebar locale={locale} />
+  <main id="main" class="page" style="padding-top: var(--lily-space-8, 2rem);">
+    <h1 class="comp-title">{t('nav.components')}</h1>
+
+    <section class="catalog__cat">
+      <h2 class="catalog__cat-title">{t('nav.foundations')}</h2>
+      <div class="catalog">
+        {
+          foundations.map((f) => (
+            <a class="cat-card" href={localePath(locale, `foundations/${f.id}/`)}>
+              <span class="cat-card__name">{f.title[locale]}</span>
+              <p class="cat-card__desc">{f.summary[locale]}</p>
+            </a>
+          ))
+        }
+        {
+          foundationComponents.map((c) => {
+            const sum = localizedSummary(c, locale);
+            return (
+              <a class="cat-card" href={localePath(locale, `components/${c.id}/`)}>
+                <span class="cat-card__name">{c.displayName}</span>
+                {sum.text && <p class="cat-card__desc">{sum.text}</p>}
+              </a>
+            );
+          })
+        }
+      </div>
+    </section>
+    {
+      groups.map((group) => (
+        <section class="catalog__cat">
+          <h2 class="catalog__cat-title">{group.label}</h2>
+          <div class="catalog">
+            {group.components.map((c) => {
+              const sum = localizedSummary(c, locale);
+              return (
+                <a class="cat-card" href={localePath(locale, `components/${c.id}/`)}>
+                  <span class="cat-card__name">{c.displayName}</span>
+                  {sum.text && <p class="cat-card__desc">{sum.text}</p>}
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      ))
+    }
+  </main>
+</div>

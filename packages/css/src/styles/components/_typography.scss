@@ -1,0 +1,139 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Typography — Text & Heading primitives.
+// -----------------------------------------------------------------------------
+// These wrap the type tokens into named, semantic roles so there is one right
+// answer for "what size/leading/weight do I use?". Tone uses the AAA *-text
+// tokens for colored body text. Japanese line-breaking/wrapping comes from the
+// reset; these only set scale, weight, and color role.
+// =============================================================================
+
+$text: '.#{cfg.class-name(text)}';
+$heading: '.#{cfg.class-name(heading)}';
+
+#{$text} {
+  margin: 0;
+  font-size: fn.var-ref('text-md');
+  line-height: fn.var-ref('leading-relaxed');
+  color: fn.var-ref('color-fg-default');
+
+  &--lead {
+    font-size: fn.var-ref('text-lg');
+    line-height: fn.var-ref('leading-relaxed');
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &--small {
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &--label {
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-medium');
+    line-height: fn.var-ref('leading-snug');
+  }
+
+  &--caption {
+    font-size: fn.var-ref('text-xs');
+    line-height: fn.var-ref('leading-snug');
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &--overline {
+    font-size: fn.var-ref('text-xs');
+    font-weight: fn.var-ref('weight-bold');
+    line-height: fn.var-ref('leading-snug');
+    letter-spacing: fn.var-ref('tracking-wide');
+    text-transform: uppercase;
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  // Truncate to a single line with an ellipsis.
+  &--truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  // --- tones (AAA colored text) ---------------------------------------------
+  &[data-tone='muted'] {
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &[data-tone='subtle'] {
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &[data-tone='primary'] {
+    color: fn.var-ref('color-primary-text');
+  }
+
+  &[data-tone='accent'] {
+    color: fn.var-ref('color-accent-text');
+  }
+
+  &[data-tone='danger'] {
+    color: fn.var-ref('color-danger-text');
+  }
+
+  &[data-tone='success'] {
+    color: fn.var-ref('color-success-text');
+  }
+
+  &[data-tone='warning'] {
+    color: fn.var-ref('color-warning-text');
+  }
+
+  &[data-tone='info'] {
+    color: fn.var-ref('color-info-text');
+  }
+}
+
+#{$heading} {
+  margin: 0;
+  font-weight: fn.var-ref('weight-bold');
+  line-height: fn.var-ref('leading-tight');
+  color: fn.var-ref('color-fg-default');
+  text-wrap: balance;
+
+  // Visual scale, decoupled from the heading level so semantics and size can
+  // be chosen independently (e.g. an <h2> that looks like a display title).
+  &--display {
+    font-size: fn.var-ref('text-5xl');
+    font-weight: fn.var-ref('weight-extrabold');
+    letter-spacing: fn.var-ref('tracking-tight');
+  }
+
+  &--1 {
+    font-size: fn.var-ref('text-4xl');
+  }
+
+  &--2 {
+    font-size: fn.var-ref('text-3xl');
+  }
+
+  &--3 {
+    font-size: fn.var-ref('text-2xl');
+  }
+
+  &--4 {
+    font-size: fn.var-ref('text-xl');
+  }
+
+  &--5 {
+    font-size: fn.var-ref('text-lg');
+  }
+
+  &--6 {
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--gradient {
+    color: transparent;
+    background-image: fn.var-ref('color-primary-gradient');
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

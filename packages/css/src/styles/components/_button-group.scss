@@ -1,0 +1,59 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Button group — segments multiple buttons into a single control.
+// =============================================================================
+
+$root: '.#{cfg.class-name(btn-group)}';
+$btn: '.#{cfg.class-name(button)}';
+
+#{$root} {
+  display: inline-flex;
+  vertical-align: middle;
+
+  // Collapse the seam between adjacent buttons.
+  #{$btn} {
+    border-radius: 0;
+
+    &:not(:first-child) {
+      margin-left: calc(-1 * #{fn.var-ref('border-thin')});
+    }
+
+    &:first-child {
+      border-top-left-radius: fn.var-ref('radius-md');
+      border-bottom-left-radius: fn.var-ref('radius-md');
+    }
+
+    &:last-child {
+      border-top-right-radius: fn.var-ref('radius-md');
+      border-bottom-right-radius: fn.var-ref('radius-md');
+    }
+
+    // Keep the focused/hovered button above its neighbors' borders.
+    &:hover,
+    &:focus-visible {
+      z-index: 1;
+    }
+  }
+
+  // Vertical orientation.
+  &--vertical {
+    flex-direction: column;
+
+    #{$btn} {
+      &:not(:first-child) {
+        margin-top: calc(-1 * #{fn.var-ref('border-thin')});
+        margin-left: 0;
+      }
+
+      &:first-child {
+        border-radius: fn.var-ref('radius-md') fn.var-ref('radius-md') 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 fn.var-ref('radius-md') fn.var-ref('radius-md');
+      }
+    }
+  }
+}

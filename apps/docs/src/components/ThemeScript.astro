@@ -1,0 +1,17 @@
+---
+// Applies the stored / OS theme before first paint to avoid a flash of the
+// wrong theme. Mirrors @lily-ui/react ThemeProvider: key `lily-theme`,
+// attribute `data-theme`, and `system` = let the CSS prefers-color-scheme win.
+---
+<script is:inline>
+  (function () {
+    try {
+      var stored = window.localStorage.getItem('lily-theme');
+      if (stored === 'light' || stored === 'dark') {
+        document.documentElement.setAttribute('data-theme', stored);
+      }
+    } catch (e) {
+      /* localStorage unavailable (private mode / SSR) — fall back to OS theme */
+    }
+  })();
+</script>

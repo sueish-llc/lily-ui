@@ -1,0 +1,187 @@
+@use 'sass:map';
+@use '../abstracts/config' as cfg;
+@use '../abstracts/mixins' as mx;
+@use '../abstracts/functions' as fn;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Utility class generation (atomic single-purpose classes).
+// -----------------------------------------------------------------------------
+// All utilities are derived from the same token maps the components use, so a
+// utility class and a component can never drift apart. Every class is prefixed
+// (e.g. `.lily-p-4`) to avoid collisions.
+//
+// Responsive variants are generated for layout-critical families using the
+// `{prefix}-{bp}:{class}` escaped form, mobile-first.
+// =============================================================================
+
+$_responsive-breakpoints: (sm, md, lg, xl);
+
+/// Emit one declaration block for a "family" of utilities derived from a map.
+/// @param {String} $infix - class infix, e.g. 'p' -> .lily-p-4
+/// @param {List}   $props - CSS properties to set
+/// @param {Map}    $values - token map
+@mixin _family($infix, $props, $values) {
+  @each $key, $value in $values {
+    .#{cfg.class-name('#{$infix}-#{$key}')} {
+      @each $prop in $props {
+        #{$prop}: #{$value};
+      }
+    }
+  }
+}
+
+/// Same as _family but also emits responsive variants.
+@mixin _responsive-family($infix, $props, $values) {
+  @include _family($infix, $props, $values);
+
+  @each $bp in $_responsive-breakpoints {
+    @include mx.breakpoint-up($bp) {
+      @each $key, $value in $values {
+        // Escaped colon keeps the class addressable: .lily-md\:p-4
+        .#{cfg.class-name('#{$bp}')}\:#{$infix}-#{$key} {
+          @each $prop in $props {
+            #{$prop}: #{$value};
+          }
+        }
+      }
+    }
+  }
+}
+
+// --- Spacing: margin / padding / gap ----------------------------------------
+@include _responsive-family('p', padding, p.$spacing);
+@include _responsive-family('px', (padding-left, padding-right), p.$spacing);
+@include _responsive-family('py', (padding-top, padding-bottom), p.$spacing);
+@include _responsive-family('pt', padding-top, p.$spacing);
+@include _responsive-family('pr', padding-right, p.$spacing);
+@include _responsive-family('pb', padding-bottom, p.$spacing);
+@include _responsive-family('pl', padding-left, p.$spacing);
+@include _responsive-family('m', margin, p.$spacing);
+@include _responsive-family('mx', (margin-left, margin-right), p.$spacing);
+@include _responsive-family('my', (margin-top, margin-bottom), p.$spacing);
+@include _responsive-family('mt', margin-top, p.$spacing);
+@include _responsive-family('mr', margin-right, p.$spacing);
+@include _responsive-family('mb', margin-bottom, p.$spacing);
+@include _responsive-family('ml', margin-left, p.$spacing);
+@include _responsive-family('gap', gap, p.$spacing);
+
+// --- Border radius ----------------------------------------------------------
+@include _family('rounded', border-radius, p.$radius);
+
+// --- Typography -------------------------------------------------------------
+@include _responsive-family('text', font-size, p.$font-size);
+@include _family('font', font-weight, p.$font-weight);
+@include _family('leading', line-height, p.$line-height);
+@include _family('tracking', letter-spacing, p.$letter-spacing);
+
+// --- Elevation --------------------------------------------------------------
+@include _family('shadow', box-shadow, p.$shadow);
+
+// --- Display ----------------------------------------------------------------
+$_display: (
+  none: none,
+  block: block,
+  inline: inline,
+  'inline-block': inline-block,
+  flex: flex,
+  'inline-flex': inline-flex,
+  grid: grid,
+);
+
+@each $key, $value in $_display {
+  .#{cfg.class-name('#{$key}')} {
+    display: #{$value};
+  }
+
+  @each $bp in $_responsive-breakpoints {
+    @include mx.breakpoint-up($bp) {
+      .#{cfg.class-name('#{$bp}')}\:#{$key} {
+        display: #{$value};
+      }
+    }
+  }
+}
+
+// --- Flexbox helpers --------------------------------------------------------
+$_flex-direction: (row: row, col: column, 'row-reverse': row-reverse, 'col-reverse': column-reverse);
+
+@include _responsive-family('flex', flex-direction, $_flex-direction);
+
+$_justify: (start: flex-start, end: flex-end, center: center, between: space-between, around: space-around, evenly: space-evenly);
+
+@include _responsive-family('justify', justify-content, $_justify);
+
+$_align: (start: flex-start, end: flex-end, center: center, stretch: stretch, baseline: baseline);
+
+@include _responsive-family('items', align-items, $_align);
+
+$_wrap: (wrap: wrap, nowrap: nowrap, 'wrap-reverse': wrap-reverse);
+
+@include _family('flex', flex-wrap, $_wrap);
+
+// --- Text alignment & color -------------------------------------------------
+$_text-align: (left: left, center: center, right: right, justify: justify);
+
+@include _responsive-family('text', text-align, $_text-align);
+
+// Semantic text colors (theme-aware via CSS vars).
+$_text-colors: (
+  default: 'color-fg-default',
+  muted: 'color-fg-muted',
+  subtle: 'color-fg-subtle',
+  primary: 'color-primary',
+  danger: 'color-danger',
+  success: 'color-success',
+  warning: 'color-warning',
+  info: 'color-info',
+);
+
+@each $key, $var in $_text-colors {
+  .#{cfg.class-name('text-#{$key}')} {
+    color: fn.var-ref($var);
+  }
+}
+
+// Semantic background colors.
+$_bg-colors: (
+  canvas: 'color-bg-canvas',
+  surface: 'color-bg-surface',
+  subtle: 'color-bg-subtle',
+  muted: 'color-bg-muted',
+  primary: 'color-primary',
+  danger: 'color-danger',
+  success: 'color-success',
+  warning: 'color-warning',
+  info: 'color-info',
+);
+
+@each $key, $var in $_bg-colors {
+  .#{cfg.class-name('bg-#{$key}')} {
+    background-color: fn.var-ref($var);
+  }
+}
+
+// --- Accessibility utilities ------------------------------------------------
+.#{cfg.class-name('visually-hidden')} {
+  @include mx.visually-hidden;
+}
+
+// Skip-link helper: visually hidden until focused.
+.#{cfg.class-name('skip-link')} {
+  @include mx.visually-hidden;
+
+  &:focus {
+    position: fixed;
+    top: fn.var-ref('space-2');
+    left: fn.var-ref('space-2');
+    z-index: fn.var-ref('z-toast');
+    width: auto;
+    height: auto;
+    padding: fn.var-ref('space-2') fn.var-ref('space-4');
+    clip: auto;
+    color: fn.var-ref('color-on-primary');
+    background: fn.var-ref('color-primary');
+    border-radius: fn.var-ref('radius-md');
+  }
+}

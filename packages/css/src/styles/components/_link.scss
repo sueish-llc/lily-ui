@@ -1,0 +1,60 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Link — a styled anchor. Uses the AAA *-text color tokens (>= 7:1 on neutral
+// surfaces) and keeps a visible focus ring. `data-status` switches the color
+// role; meaning is never carried by color alone (text/icon convey it too).
+// =============================================================================
+
+$root: '.#{cfg.class-name(link)}';
+
+#{$root} {
+  color: fn.var-ref('color-primary-text');
+  text-decoration: underline;
+  text-decoration-thickness: fn.var-ref('border-thin');
+  text-underline-offset: 0.2em;
+  border-radius: fn.var-ref('radius-sm');
+  transition: color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  &:hover {
+    text-decoration-thickness: fn.var-ref('border-thick');
+  }
+
+  @include mx.focus-ring;
+
+  // Subtle until interacted with (e.g. in dense body copy).
+  &--quiet {
+    color: fn.var-ref('color-fg-default');
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // External-link affordance: a small outward arrow after the label.
+  &--external::after {
+    content: '\2197'; // ↗
+    display: inline-block;
+    margin-inline-start: 0.15em;
+    font-size: 0.85em;
+  }
+
+  &[data-status='danger'] {
+    color: fn.var-ref('color-danger-text');
+  }
+
+  &[data-status='success'] {
+    color: fn.var-ref('color-success-text');
+  }
+
+  &[data-status='warning'] {
+    color: fn.var-ref('color-warning-text');
+  }
+
+  &[data-status='info'] {
+    color: fn.var-ref('color-info-text');
+  }
+}

@@ -1,0 +1,48 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Image — a robust media wrapper: lazy-loading, a fade-in on load, an optional
+// fixed aspect ratio, and a graceful fallback when the source fails.
+// =============================================================================
+
+$root: '.#{cfg.class-name(image)}';
+
+#{$root} {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background-color: fn.var-ref('color-bg-subtle');
+
+  &--rounded {
+    border-radius: fn.var-ref('radius-lg');
+  }
+
+  &__img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity fn.var-ref('duration-base') fn.var-ref('ease-standard');
+  }
+
+  &--loading &__img {
+    opacity: 0;
+  }
+
+  &__fallback {
+    display: flex;
+    flex-direction: column;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: fn.var-ref('control-h-lg');
+    padding: fn.var-ref('space-4');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-subtle');
+    text-align: center;
+  }
+}

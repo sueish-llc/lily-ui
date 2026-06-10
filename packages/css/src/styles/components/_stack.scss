@@ -1,0 +1,25 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Stack — one-dimensional flex layout with a consistent gap.
+// -----------------------------------------------------------------------------
+// `.lily-vstack` : vertical stack (column), full width
+// `.lily-hstack` : horizontal stack (row), vertically centered
+// Gap is controlled with the `.lily-gap-{n}` utilities (default: space-3).
+// =============================================================================
+
+.#{cfg.class-name(vstack)} {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: fn.var-ref('space-3');
+  align-self: stretch;
+}
+
+.#{cfg.class-name(hstack)} {
+  display: flex;
+  flex-direction: row;
+  gap: fn.var-ref('space-3');
+  align-items: center;
+}

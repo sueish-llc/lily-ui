@@ -1,0 +1,289 @@
+---
+import Sidebar from './Sidebar.astro';
+import MotionShowcase from '../islands/MotionShowcase.tsx';
+import { useTranslations, type Locale } from '../i18n/ui';
+import type { Foundation } from '../registry/foundations';
+import { palette } from '../registry/palette.generated';
+
+interface Props {
+  locale: Locale;
+  foundation: Foundation;
+}
+const { locale, foundation } = Astro.props;
+const t = useTranslations(locale);
+
+// Display labels for the raw palette ramps (和色 + the role they feed).
+const RAMP_LABELS: Record<string, Record<Locale, string>> = {
+  brand: { ja: '笹百合（primary）', en: 'Sasayuri (primary)' },
+  neutral: { ja: 'ニュートラル', en: 'Neutral' },
+  fuji: { ja: '藤（accent）', en: 'Fuji (accent)' },
+  sakura: { ja: '桜', en: 'Sakura' },
+  red: { ja: '緋（danger）', en: 'Scarlet (danger)' },
+  amber: { ja: '琥珀（warning）', en: 'Amber (warning)' },
+  green: { ja: '緑（success）', en: 'Green (success)' },
+  blue: { ja: '藍（info）', en: 'Indigo (info)' },
+};
+
+// 和色 (traditional Japanese color) names mapped to their semantic role, for
+// the design-language page.
+const wairo: { role: string; ja: string; en: string }[] = [
+  { role: 'primary', ja: '笹百合（ささゆり）', en: 'Sasayuri lily' },
+  { role: 'accent', ja: '藤（ふじ）', en: 'Fuji wisteria' },
+  { role: 'danger', ja: '緋（あけ）', en: 'Scarlet' },
+  { role: 'warning', ja: '琥珀（こはく）', en: 'Amber' },
+  { role: 'success', ja: '緑（みどり）', en: 'Green' },
+  { role: 'info', ja: '藍（あい）', en: 'Indigo' },
+];
+
+// --- Color groups (semantic tokens) -----------------------------------------
+const colorGroups = [
+  {
+    label: t('fnd.colors.brand'),
+    swatches: [
+      'primary', 'primary-hover', 'primary-active', 'primary-subtle',
+      'accent', 'accent-hover', 'accent-subtle',
+    ],
+  },
+  {
+    label: t('fnd.colors.status'),
+    swatches: [
+      'danger', 'danger-subtle', 'warning', 'warning-subtle',
+      'success', 'success-subtle', 'info', 'info-subtle',
+    ],
+  },
+  {
+    label: t('fnd.colors.surface'),
+    swatches: ['bg-canvas', 'bg-surface', 'bg-subtle', 'bg-muted', 'bg-inverse'],
+  },
+];
+const textTokens = ['fg-default', 'fg-muted', 'fg-subtle', 'primary-text', 'accent-text', 'danger-text', 'success-text'];
+const gradientTokens = ['primary-gradient', 'accent-gradient'];
+
+// --- Scales ------------------------------------------------------------------
+const spacing = ['1', '2', '3', '4', '5', '6', '8', '10', '12', '16', '20', '24'];
+const radii = ['sm', 'md', 'lg', 'xl', '2xl', 'pill'];
+const shadows = ['sm', 'md', 'lg', 'xl'];
+const typeScale = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'];
+
+const motionLabels = {
+  entrance: t('fnd.motion.entrance'),
+  exit: t('fnd.motion.exit'),
+  attention: t('fnd.motion.attention'),
+  hover: t('fnd.motion.hover'),
+  text: t('fnd.motion.text'),
+  background: t('fnd.motion.background'),
+  ambient: t('fnd.motion.ambient'),
+  replayAll: t('fnd.motion.replayAll'),
+  hoverHint: t('fnd.motion.hoverHint'),
+  play: t('fnd.motion.play'),
+  copy: t('comp.copy'),
+  copied: t('comp.copied'),
+};
+---
+
+<div class="doc-shell">
+  <Sidebar locale={locale} />
+  <main id="main" class="page" style="padding-top: var(--lily-space-8, 2rem);">
+    <header class="comp-header">
+      <p class="comp-eyebrow">{t('nav.foundations')}</p>
+      <h1 class="comp-title">{foundation.title[locale]}</h1>
+      <p class="comp-summary">{foundation.summary[locale]}</p>
+    </header>
+
+    {
+      foundation.id === 'design-language' && (
+        <>
+          <section class="comp-section">
+            <div
+              style="background: var(--lily-color-accent-gradient); color: var(--lily-color-on-accent); border-radius: var(--lily-radius-2xl); padding: var(--lily-space-12); display: flex; align-items: baseline; gap: var(--lily-space-3); box-shadow: var(--lily-shadow-lg);"
+            >
+              <span style="font-size: var(--lily-text-5xl); font-weight: var(--lily-weight-extrabold); line-height: 1;">
+                彩
+              </span>
+              <span style="font-size: var(--lily-text-lg); opacity: 0.9;">さい</span>
+            </div>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.sai.principles')}</h2>
+            <ul class="a11y-list">
+              <li>{t('fnd.sai.soft')}</li>
+              <li>{t('fnd.sai.warm')}</li>
+              <li>{t('fnd.sai.friendly')}</li>
+            </ul>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.sai.colors')}</h2>
+            <p class="comp-summary">{t('fnd.sai.colorsBody')}</p>
+            <div class="swatch-grid">
+              {wairo.map((w) => (
+                <div class="swatch">
+                  <span class="swatch__chip" style={`background: var(--lily-color-${w.role})`} />
+                  <span class="wairo-label">
+                    {w[locale]} · {w.role}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )
+    }
+
+    {
+      foundation.id === 'colors' && (
+        <>
+          {colorGroups.map((group) => (
+            <section class="comp-section">
+              <h2>{group.label}</h2>
+              <div class="swatch-grid">
+                {group.swatches.map((tok) => (
+                  <div class="swatch">
+                    <span class="swatch__chip" style={`background: var(--lily-color-${tok})`} />
+                    <button class="copy" type="button" data-copy={`--lily-color-${tok}`} title={t('fnd.copyHint')}>--lily-color-{tok}</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+
+          <section class="comp-section">
+            <h2>{t('fnd.colors.text')}</h2>
+            <div class="swatch-grid">
+              {textTokens.map((tok) => (
+                <div class="swatch swatch--text">
+                  <span class="swatch__text" style={`color: var(--lily-color-${tok})`}>
+                    あア Aa 7:1
+                  </span>
+                  <button class="copy" type="button" data-copy={`--lily-color-${tok}`} title={t('fnd.copyHint')}>--lily-color-{tok}</button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.colors.gradient')}</h2>
+            <div class="swatch-grid">
+              {gradientTokens.map((tok) => (
+                <div class="swatch">
+                  <span class="swatch__chip swatch__chip--tall" style={`background: var(--lily-color-${tok})`} />
+                  <button class="copy" type="button" data-copy={`--lily-color-${tok}`} title={t('fnd.copyHint')}>--lily-color-{tok}</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )
+    }
+
+    {
+      foundation.id === 'tokens' && (
+        <>
+          <section class="comp-section">
+            <h2>{t('fnd.tokens.spacing')}</h2>
+            <div class="scale-list">
+              {spacing.map((s) => (
+                <div class="scale-row">
+                  <code>space-{s}</code>
+                  <span class="scale-bar" style={`inline-size: var(--lily-space-${s})`} />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.tokens.radius')}</h2>
+            <div class="swatch-grid">
+              {radii.map((r) => (
+                <div class="swatch">
+                  <span class="radius-box" style={`border-radius: var(--lily-radius-${r})`} />
+                  <code>radius-{r}</code>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.tokens.shadow')}</h2>
+            <div class="swatch-grid">
+              {shadows.map((sh) => (
+                <div class="swatch">
+                  <span class="shadow-box" style={`box-shadow: var(--lily-shadow-${sh})`} />
+                  <code>shadow-{sh}</code>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section class="comp-section">
+            <h2>{t('fnd.tokens.type')}</h2>
+            <div class="type-list">
+              {typeScale.map((ts) => (
+                <div class="type-row">
+                  <span style={`font-size: var(--lily-text-${ts})`}>見出しと本文　Heading</span>
+                  <code>text-{ts}</code>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )
+    }
+
+    {
+      foundation.id === 'motion' && (
+        <section class="comp-section">
+          <MotionShowcase client:visible labels={motionLabels} />
+        </section>
+      )
+    }
+
+    {
+      foundation.id === 'palette' && (
+        <section class="comp-section">
+          {palette.map((ramp) => (
+            <div class="palette-ramp">
+              <h2 class="palette-ramp__name">{RAMP_LABELS[ramp.name]?.[locale] ?? ramp.name}</h2>
+              <div class="palette-row">
+                {ramp.steps.map((s) => (
+                  <div class="palette-chip">
+                    <span class="palette-chip__swatch" style={`background:${s.hex}`}>
+                      <span class="palette-chip__step">{s.step}</span>
+                    </span>
+                    <button class="copy" type="button" data-copy={s.var} title={t('fnd.copyHint')}>
+                      {s.var}
+                    </button>
+                    <button class="copy" type="button" data-copy={s.hex} title={t('fnd.copyHint')}>
+                      {s.hex}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )
+    }
+  </main>
+</div>
+
+<script is:inline>
+  (function () {
+    function copy(text, btn) {
+      navigator.clipboard?.writeText(text).then(
+        function () {
+          btn.classList.add('is-copied');
+          window.setTimeout(function () {
+            btn.classList.remove('is-copied');
+          }, 1200);
+        },
+        function () {},
+      );
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.copy[data-copy]');
+      if (btn) copy(btn.getAttribute('data-copy'), btn);
+    });
+  })();
+</script>

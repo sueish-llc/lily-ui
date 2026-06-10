@@ -1,0 +1,58 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Card — a flexible content container.
+// =============================================================================
+
+$root: '.#{cfg.class-name(card)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: fn.var-ref('color-fg-default');
+  word-wrap: break-word;
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-lg');
+
+  &__header,
+  &__footer {
+    padding: fn.var-ref('space-4');
+    background-color: fn.var-ref('color-bg-subtle');
+  }
+
+  &__header {
+    font-weight: fn.var-ref('weight-bold');
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-lg') fn.var-ref('radius-lg') 0 0;
+  }
+
+  &__footer {
+    border-top: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: 0 0 fn.var-ref('radius-lg') fn.var-ref('radius-lg');
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: fn.var-ref('space-4');
+  }
+
+  &__title {
+    margin-bottom: fn.var-ref('space-2');
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+  }
+
+  &__image {
+    width: 100%;
+    height: auto;
+    border-radius: fn.var-ref('radius-lg') fn.var-ref('radius-lg') 0 0;
+  }
+
+  &--elevated {
+    border-color: transparent;
+    box-shadow: fn.var-ref('shadow-md');
+  }
+}

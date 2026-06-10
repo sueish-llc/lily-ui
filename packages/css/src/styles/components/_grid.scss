@@ -1,0 +1,110 @@
+@use 'sass:math';
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Grid — a 12-column responsive flexbox grid (classic 12-column layout model).
+// -----------------------------------------------------------------------------
+// `.lily-row`             : flex row with negative gutter margins
+// `.lily-col`             : equal-width auto column
+// `.lily-col-{n}`         : span n of 12 (xs)
+// `.lily-col-{bp}-{n}`    : span n from {bp} up
+// `.lily-col-auto`        : width: auto (sized by content)
+// `.lily-offset-{bp}-{n}` : left margin of n/12
+// Gutters are driven by the `--lily-gutter-x/y` custom properties.
+// =============================================================================
+
+$columns: 12;
+$root-row: '.#{cfg.class-name(row)}';
+$root-col: '.#{cfg.class-name(col)}';
+$breakpoints: (xs, sm, md, lg, xl, '2xl');
+
+#{$root-row} {
+  --#{cfg.$prefix}-gutter-x: #{fn.var-ref('space-6')};
+  --#{cfg.$prefix}-gutter-y: 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--#{cfg.$prefix}-gutter-y));
+  margin-inline: calc(-0.5 * var(--#{cfg.$prefix}-gutter-x));
+
+  > * {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    margin-top: var(--#{cfg.$prefix}-gutter-y);
+    padding-inline: calc(0.5 * var(--#{cfg.$prefix}-gutter-x));
+  }
+}
+
+// Equal-width auto column.
+#{$root-col} {
+  flex: 1 0 0%;
+}
+
+@mixin _col-span($n) {
+  flex: 0 0 auto;
+  width: math.percentage(math.div($n, $columns));
+}
+
+@mixin _col-auto {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+// Generate span + offset classes for each breakpoint.
+@each $bp in $breakpoints {
+  // xs has no infix (.lily-col-6); others are .lily-col-md-6 etc.
+  $infix: '-#{$bp}';
+
+  @if $bp == xs {
+    $infix: '';
+  }
+
+  @include mx.breakpoint-up($bp) {
+    // Auto + equal-width at this breakpoint
+    .#{cfg.class-name('col#{$infix}')} {
+      flex: 1 0 0%;
+    }
+
+    .#{cfg.class-name('col#{$infix}-auto')} {
+      @include _col-auto;
+    }
+
+    @for $n from 1 through $columns {
+      .#{cfg.class-name('col#{$infix}-#{$n}')} {
+        @include _col-span($n);
+      }
+    }
+
+    // Offsets 0..11
+    @for $n from 0 through ($columns - 1) {
+      .#{cfg.class-name('offset#{$infix}-#{$n}')} {
+        @if $n == 0 {
+          margin-left: 0;
+        } @else {
+          margin-left: math.percentage(math.div($n, $columns));
+        }
+      }
+    }
+  }
+}
+
+// Gutter helpers (set the custom properties).
+@each $key, $value in p.$spacing {
+  .#{cfg.class-name('g-#{$key}')} {
+    --#{cfg.$prefix}-gutter-x: #{$value};
+    --#{cfg.$prefix}-gutter-y: #{$value};
+  }
+
+  .#{cfg.class-name('gx-#{$key}')} {
+    --#{cfg.$prefix}-gutter-x: #{$value};
+  }
+
+  .#{cfg.class-name('gy-#{$key}')} {
+    --#{cfg.$prefix}-gutter-y: #{$value};
+  }
+}

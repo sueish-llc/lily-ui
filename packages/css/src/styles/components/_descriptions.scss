@@ -1,0 +1,94 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Descriptions — a key/value definition list (dl/dt/dd).
+// Renders in a horizontal or vertical layout, optionally bordered.
+// =============================================================================
+
+$root: '.#{cfg.class-name(descriptions)}';
+
+#{$root} {
+  display: grid;
+  gap: 0;
+  color: fn.var-ref('color-fg-default');
+  font-size: fn.var-ref('text-md');
+
+  // Default (horizontal): term and detail share the same row.
+  // columns=1 → 1 term + 1 detail pair per row
+  // columns=2 → 2 pairs per row
+  // columns=3 → 3 pairs per row
+  grid-template-columns: repeat(1, max-content 1fr);
+
+  &--cols-2 {
+    grid-template-columns: repeat(2, max-content 1fr);
+  }
+
+  &--cols-3 {
+    grid-template-columns: repeat(3, max-content 1fr);
+  }
+
+  // Bordered
+  &--bordered {
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    overflow: hidden;
+  }
+
+  &--bordered #{$root}__term,
+  &--bordered #{$root}__detail {
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  // Vertical layout: term above detail, each item spans full width.
+  &--vertical {
+    grid-template-columns: 1fr;
+
+    &#{$root}--cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &#{$root}--cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &--vertical #{$root}__term,
+  &--vertical #{$root}__detail {
+    grid-column: auto;
+    display: block;
+  }
+
+  &--vertical #{$root}__term {
+    padding-block-end: fn.var-ref('space-1');
+  }
+
+  &--vertical #{$root}__detail {
+    padding-block: 0 fn.var-ref('space-4');
+  }
+
+  // Item — wraps term + detail in vertical layout
+  &__item {
+    display: contents;
+  }
+
+  // Term (dt)
+  &__term {
+    padding: fn.var-ref('space-3') fn.var-ref('space-4');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-muted');
+    background-color: fn.var-ref('color-bg-subtle');
+    white-space: nowrap;
+  }
+
+  // Detail (dd)
+  &__detail {
+    padding: fn.var-ref('space-3') fn.var-ref('space-4');
+    margin: 0;
+    color: fn.var-ref('color-fg-default');
+  }
+}

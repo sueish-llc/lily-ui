@@ -1,0 +1,49 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Alert — a contextual feedback message.
+// =============================================================================
+
+$root: '.#{cfg.class-name(alert)}';
+
+#{$root} {
+  display: flex;
+  gap: fn.var-ref('space-3');
+  align-items: flex-start;
+  padding: fn.var-ref('space-4');
+  color: fn.var-ref('color-fg-default');
+  background-color: fn.var-ref('color-primary-subtle');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-primary');
+  border-radius: fn.var-ref('radius-md');
+
+  &__body {
+    flex: 1 1 auto;
+  }
+
+  &__title {
+    margin-bottom: fn.var-ref('space-1');
+    font-weight: fn.var-ref('weight-bold');
+  }
+
+  // Status palettes: tint background + border with the status color.
+  &[data-status='danger'] {
+    background-color: fn.var-ref('color-danger-subtle');
+    border-color: fn.var-ref('color-danger');
+  }
+
+  &[data-status='success'] {
+    background-color: fn.var-ref('color-success-subtle');
+    border-color: fn.var-ref('color-success');
+  }
+
+  &[data-status='warning'] {
+    background-color: fn.var-ref('color-warning-subtle');
+    border-color: fn.var-ref('color-warning');
+  }
+
+  &[data-status='info'] {
+    background-color: fn.var-ref('color-info-subtle');
+    border-color: fn.var-ref('color-info');
+  }
+}

@@ -1,0 +1,30 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Watermark — tiles a low-opacity overlay across its children. The overlay is
+// pointer-events: none and aria-hidden; children render normally beneath it.
+// =============================================================================
+
+$root: '.#{cfg.class-name(watermark)}';
+
+#{$root} {
+  position: relative;
+  isolation: isolate;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    // currentColor picks up the foreground token so the tint adapts to light/dark.
+    color: fn.var-ref('color-fg-default');
+  }
+
+  // Ensure child content sits above the overlay.
+  > :not(#{$root}__overlay) {
+    position: relative;
+    z-index: 2;
+  }
+}

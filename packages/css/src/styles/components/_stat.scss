@@ -1,0 +1,50 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Stat / Statistic — a KPI tile: label, big value, and an optional trend delta.
+// The trend pairs a directional arrow (glyph) with a status color so meaning is
+// not color-only.
+// =============================================================================
+
+$root: '.#{cfg.class-name(stat)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-1');
+
+  &__label {
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__value {
+    font-size: fn.var-ref('text-3xl');
+    font-weight: fn.var-ref('weight-bold');
+    line-height: fn.var-ref('leading-tight');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__delta {
+    display: inline-flex;
+    gap: fn.var-ref('space-1');
+    align-items: center;
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-muted');
+
+    &--up {
+      color: fn.var-ref('color-success-text');
+    }
+
+    &--down {
+      color: fn.var-ref('color-danger-text');
+    }
+  }
+
+  &__help {
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-subtle');
+  }
+}

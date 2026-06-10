@@ -1,0 +1,54 @@
+name: Release (npm)
+
+# Changesets-driven release flow. On every push to main:
+#   - if there are pending changesets, opens/updates a "Version Packages" PR
+#     that bumps versions and changelogs;
+#   - if the versions are already bumped (the PR was merged), builds and
+#     publishes the public @lily-ui/* packages to npm.
+#
+# Publishing authenticates via npm Trusted Publishing (OIDC) — no NPM_TOKEN
+# secret. Each @lily-ui/* package must list this repository and this workflow
+# file (release.yml) as a Trusted Publisher in its npm settings. Provenance is
+# generated automatically by the OIDC flow.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # OIDC for npm trusted publishing
+
+concurrency: release
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # Trusted publishing requires npm >= 11.5.1; the npm bundled with the
+      # runner's Node may be older. Pinned exactly — this job can publish.
+      - name: Update npm (OIDC support)
+        run: npm install -g npm@11.5.1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create release PR or publish to npm
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        with:
+          version: pnpm version-packages
+          publish: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,182 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Month picker — a trigger button paired with a popup that holds a 12-month
+// grid and prev/next year navigation. The value is a Temporal.PlainYearMonth in
+// the framework layer; this layer only styles the rendered markup.
+// =============================================================================
+
+$root: '.#{cfg.class-name(month-picker)}';
+
+#{$root} {
+  position: relative;
+  display: inline-block;
+
+  // --- Trigger button -------------------------------------------------------
+  &__trigger {
+    display: inline-flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: space-between;
+    min-width: fn.rem(180px);
+    height: fn.var-ref('control-h-md');
+    padding: 0 fn.var-ref('space-3');
+    font-family: fn.var-ref('font-sans');
+    font-size: fn.var-ref('text-md');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+    border-radius: fn.var-ref('radius-md');
+    transition:
+      border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not(:disabled) {
+      border-color: fn.var-ref('color-border-focus');
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background-color: fn.var-ref('color-bg-subtle');
+      opacity: 0.7;
+    }
+  }
+
+  &--sm #{$root}__trigger {
+    height: fn.var-ref('control-h-sm');
+  }
+
+  &--lg #{$root}__trigger {
+    height: fn.var-ref('control-h-lg');
+  }
+
+  &__value--placeholder {
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  // --- Popup ----------------------------------------------------------------
+  &__popup {
+    position: absolute;
+    inset-block-start: calc(100% + #{fn.var-ref('space-1')});
+    inset-inline-start: 0;
+    z-index: fn.var-ref('z-popover');
+    width: max-content;
+    max-width: calc(100vw - #{fn.var-ref('space-6')});
+    padding: fn.var-ref('space-3');
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-lg');
+    box-shadow: fn.var-ref('shadow-lg');
+
+    &--end {
+      inset-inline: auto 0;
+    }
+  }
+
+  &__header {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: fn.var-ref('space-2');
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: fn.var-ref('text-md');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+    text-align: center;
+  }
+
+  &__nav {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: fn.rem(32px);
+    height: fn.rem(32px);
+    color: fn.var-ref('color-fg-muted');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-md');
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not(:disabled) {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  // --- 12-month grid (3 columns × 4 rows) -----------------------------------
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: fn.var-ref('space-1');
+  }
+
+  &__month {
+    min-width: fn.rem(72px);
+    height: fn.rem(40px);
+    padding: 0 fn.var-ref('space-2');
+    font-family: fn.var-ref('font-sans');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-md');
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &:hover:not([aria-disabled='true']) {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &--selected {
+      color: fn.var-ref('color-on-primary');
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+
+      &:hover {
+        background-color: fn.var-ref('color-primary-hover');
+      }
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+  }
+}
+
+// Honor users who prefer reduced motion.
+@include mx.respect-reduced-motion {
+  #{$root}__trigger,
+  #{$root}__nav,
+  #{$root}__month {
+    transition: none;
+  }
+}

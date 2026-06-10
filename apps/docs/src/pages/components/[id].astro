@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import ComponentDetail from '../../components/ComponentDetail.astro';
+import { components, getComponent, localizedSummary } from '../../registry';
+import { useTranslations } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return components.map((c) => ({ params: { id: c.id } }));
+}
+
+const { id } = Astro.params;
+const component = getComponent(id!);
+if (!component) return Astro.redirect('/404');
+const t = useTranslations('ja');
+const summary = localizedSummary(component, 'ja');
+---
+
+<Base
+  locale="ja"
+  title={component.displayName}
+  description={summary.text || t('site.description')}
+  pagePath={`components/${component.id}/`}
+>
+  <ComponentDetail locale="ja" component={component} />
+</Base>

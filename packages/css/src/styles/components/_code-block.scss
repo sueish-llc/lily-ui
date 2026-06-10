@@ -1,0 +1,88 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// CodeBlock — a block-level, multi-line code display with language label and
+// optional copy button. The inner <pre><code> scrolls horizontally; the header
+// bar stays anchored at the top.
+// =============================================================================
+
+$root: '.#{cfg.class-name(code-block)}';
+
+#{$root} {
+  overflow: hidden;
+  background-color: fn.var-ref('color-bg-subtle');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: fn.var-ref('space-2');
+    padding-block: fn.var-ref('space-2');
+    padding-inline: fn.var-ref('space-4');
+    background-color: fn.var-ref('color-bg-muted');
+    border-block-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__language {
+    font-family: fn.var-ref('font-mono');
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-muted');
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__copy {
+    margin-inline-start: auto;
+  }
+
+  &__pre {
+    display: block;
+    padding: fn.var-ref('space-4');
+    margin: 0;
+    overflow-x: auto;
+    font-family: fn.var-ref('font-mono');
+    font-size: fn.var-ref('text-sm');
+    line-height: fn.var-ref('leading-normal');
+    color: fn.var-ref('color-fg-default');
+    tab-size: 2;
+    white-space: pre;
+
+    // Make the scrollable region keyboard-focusable so users can read long
+    // lines without a mouse. The ring appears on the pre itself.
+    @include mx.focus-ring;
+
+    &--numbered #{$root}__line {
+      display: flex;
+      gap: fn.var-ref('space-4');
+    }
+  }
+
+  &__code {
+    display: block;
+  }
+
+  &__line {
+    display: flex;
+    gap: fn.var-ref('space-4');
+    min-block-size: 1.5em;
+  }
+
+  &__line-number {
+    flex: 0 0 auto;
+    min-inline-size: 2ch;
+
+    // fg-muted (not fg-subtle) so the numbers clear 7:1 on the code surface in
+    // dark mode too (AAA 1.4.6).
+    color: fn.var-ref('color-fg-muted');
+    text-align: end;
+    user-select: none;
+  }
+
+  &__line-content {
+    flex: 1 1 auto;
+  }
+}

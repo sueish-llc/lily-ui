@@ -1,0 +1,40 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Toolbar — a single-tab-stop group of controls with roving tabindex.
+// =============================================================================
+
+$root: '.#{cfg.class-name(toolbar)}';
+
+#{$root} {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-1');
+  align-items: center;
+  padding: fn.var-ref('space-1');
+  background-color: fn.var-ref('color-bg-subtle');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+    width: max-content;
+  }
+
+  // Separator between toolbar item groups
+  &__separator {
+    align-self: stretch;
+    width: fn.var-ref('border-thin');
+    background-color: fn.var-ref('color-border-default');
+    margin-block: fn.var-ref('space-1');
+
+    #{$root}--vertical & {
+      width: auto;
+      height: fn.var-ref('border-thin');
+      margin-block: 0;
+      margin-inline: fn.var-ref('space-1');
+    }
+  }
+}

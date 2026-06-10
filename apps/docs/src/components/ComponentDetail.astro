@@ -1,0 +1,129 @@
+---
+import Sidebar from './Sidebar.astro';
+import Playground from '../islands/Playground.tsx';
+import StorybookIcon from './StorybookIcon.astro';
+import { CopyButton } from '@lily-ui/react';
+import { useTranslations, type Locale } from '../i18n/ui';
+import { categoryLabel, localizedSummary, type Component } from '../registry';
+import { storybookDocsHref } from '../lib/storybook';
+
+interface Props {
+  locale: Locale;
+  component: Component;
+}
+const { locale, component } = Astro.props;
+const t = useTranslations(locale);
+const summary = localizedSummary(component, locale);
+
+const playgroundLabels = {
+  preview: t('comp.preview'),
+  code: t('comp.code'),
+  controls: t('comp.controls'),
+  copy: t('comp.copy'),
+  copied: t('comp.copied'),
+  noPreview: t('comp.noPreview'),
+};
+
+const frameworks = [
+  component.frameworks.react && 'React',
+  component.frameworks.vue && 'Vue',
+  component.frameworks.wc && 'Web Components',
+].filter(Boolean) as string[];
+
+const hasProps = component.props.length > 0;
+---
+
+<div class="doc-shell">
+  <Sidebar locale={locale} />
+  <main id="main" class="page" style="padding-top: var(--lily-space-8, 2rem);">
+    <header class="comp-header">
+      <p class="comp-eyebrow">{categoryLabel(component.category, locale)}</p>
+      <h1 class="comp-title">{component.displayName}</h1>
+      {summary.text && <p class="comp-summary">{summary.text}</p>}
+      {summary.pending && <p class="translation-note">{t('misc.translationPending')}</p>}
+      <div class="comp-frameworks" aria-label={t('comp.relatedFrameworks')}>
+        {frameworks.map((f) => <span class="fw-badge">{f}</span>)}
+      </div>
+      <a class="sb-link comp-sb-link" href={storybookDocsHref(component.storyTitle)}>
+        <StorybookIcon />
+        {t('comp.viewInStorybook')}
+      </a>
+    </header>
+
+    <section class="comp-section" aria-labelledby="pg-h">
+      <h2 id="pg-h">{t('comp.playground')}</h2>
+      <Playground
+        client:only="react"
+        name={component.name}
+        tag={component.tag}
+        controls={component.controls}
+        childrenText={component.displayName}
+        labels={playgroundLabels}
+      />
+    </section>
+
+    {
+      component.examples.length > 0 && (
+        <section class="comp-section">
+          <h2>{t('comp.examples')}</h2>
+          {component.examples.map((ex) => (
+            <div class="code-example">
+              <CopyButton
+                client:visible
+                className="code-example__copy"
+                value={ex}
+                copyLabel={t('comp.copy')}
+                copiedLabel={t('comp.copied')}
+              />
+              <pre class="code-block"><code>{ex}</code></pre>
+            </div>
+          ))}
+        </section>
+      )
+    }
+
+    {
+      hasProps && (
+        <section class="comp-section">
+          <h2>{t('comp.props')}</h2>
+          <div class="table-scroll">
+          <table class="prop-table">
+            <thead>
+              <tr>
+                <th>{t('prop.name')}</th>
+                <th>{t('prop.type')}</th>
+                <th>{t('prop.default')}</th>
+                <th>{t('prop.description')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {component.props.map((p) => (
+                <tr>
+                  <td>
+                    <code>{p.name}</code>
+                    {!p.optional && <span class="prop-req"> {t('prop.required')}</span>}
+                  </td>
+                  <td><code>{p.type}</code></td>
+                  <td>{p.default !== undefined ? <code>{String(p.default)}</code> : '—'}</td>
+                  <td>{p.description ?? ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="comp-section">
+      <h2>{t('comp.a11y')}</h2>
+      <ul class="a11y-list">
+        <li>{t('a11y.contrast')}</li>
+        <li>{t('a11y.keyboard')}</li>
+        <li>{t('a11y.focus')}</li>
+        <li>{t('a11y.motion')}</li>
+      </ul>
+      <p class="translation-note" style="margin-top: 0.75rem;">{t('a11y.note')}</p>
+    </section>
+  </main>
+</div>

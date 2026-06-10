@@ -1,0 +1,46 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Kbd & Code — inline monospace primitives for keyboard shortcuts and code.
+// =============================================================================
+
+#{'.#{cfg.class-name(kbd)}'} {
+  display: inline-flex;
+  align-items: center;
+  gap: fn.var-ref('space-1');
+  padding-block: fn.var-ref('space-px');
+  padding-inline: fn.var-ref('space-2');
+  font-family: fn.var-ref('font-mono');
+  font-size: 0.85em;
+  font-weight: fn.var-ref('weight-medium');
+  line-height: 1;
+  color: fn.var-ref('color-fg-default');
+  white-space: nowrap;
+  background-color: fn.var-ref('color-bg-subtle');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-block-end-width: fn.var-ref('border-thick');
+  border-radius: fn.var-ref('radius-sm');
+}
+
+#{'.#{cfg.class-name(code)}'} {
+  padding-block: fn.var-ref('space-px');
+  padding-inline: fn.var-ref('space-1');
+  font-family: fn.var-ref('font-mono');
+  font-size: 0.9em;
+  color: fn.var-ref('color-accent-text');
+  background-color: fn.var-ref('color-bg-subtle');
+  border-radius: fn.var-ref('radius-sm');
+
+  // Block code: a scrollable, padded surface.
+  &--block {
+    display: block;
+    padding: fn.var-ref('space-4');
+    overflow-x: auto;
+    color: fn.var-ref('color-fg-default');
+    line-height: fn.var-ref('leading-normal');
+    white-space: pre;
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+  }
+}

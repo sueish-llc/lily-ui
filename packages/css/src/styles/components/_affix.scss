@@ -1,0 +1,20 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Affix — sticks its content to the top (or bottom) of the viewport once
+// scrolled into position. Implemented with CSS `position: sticky`; the offset
+// is set via the --lily-affix-offset custom property.
+// =============================================================================
+
+$root: '.#{cfg.class-name(affix)}';
+
+#{$root} {
+  position: sticky;
+  inset-block-start: var(--#{cfg.$prefix}-affix-offset, 0);
+  z-index: fn.var-ref('z-sticky');
+
+  &--bottom {
+    inset-block: auto var(--#{cfg.$prefix}-affix-offset, 0);
+  }
+}

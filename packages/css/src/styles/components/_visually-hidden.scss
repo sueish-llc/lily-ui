@@ -1,0 +1,29 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// VisuallyHidden — focusable modifier for the sr-only base class.
+//
+// The base `.lily-visually-hidden` class is already emitted by
+// `utilities/_generate.scss` (via the `visually-hidden` mixin). This partial
+// adds the `--focusable` modifier, which reveals the element on keyboard focus
+// so skip-navigation links and similar helpers become operable.
+// =============================================================================
+
+$root: '.#{cfg.class-name(visually-hidden)}';
+
+// The focusable variant becomes visible when it or a descendant receives
+// keyboard focus (e.g. a skip-navigation link). Reverting all the same
+// properties the base mixin sets (position, size, overflow, clip, whitespace).
+#{$root}--focusable:focus,
+#{$root}--focusable:focus-within {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: revert;
+  margin: revert;
+  overflow: visible;
+  clip: auto;
+  white-space: revert;
+  border: revert;
+}

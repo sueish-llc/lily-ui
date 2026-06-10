@@ -1,0 +1,80 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Tree — a hierarchical, keyboard-navigable list (WAI-ARIA tree). Branches
+// expand/collapse; the component manages roving focus + selection.
+// =============================================================================
+
+$root: '.#{cfg.class-name(tree)}';
+
+#{$root} {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__group {
+    padding-inline-start: fn.var-ref('space-4');
+    margin: 0;
+    list-style: none;
+  }
+
+  &__label {
+    display: flex;
+    gap: fn.var-ref('space-1');
+    align-items: center;
+    padding: fn.var-ref('space-1') fn.var-ref('space-2');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    border-radius: fn.var-ref('radius-sm');
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+  }
+
+  // The treeitem (li) is the focusable element; show the ring on its label row.
+  &__node:focus-visible {
+    outline: none;
+  }
+
+  &__node:focus-visible > &__label {
+    outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+    outline-offset: calc(-1 * #{fn.var-ref('border-thin')});
+  }
+
+  &__node[aria-selected='true'] > &__label {
+    color: fn.var-ref('color-primary-text');
+    background-color: fn.var-ref('color-primary-subtle');
+  }
+
+  &__toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    inline-size: fn.var-ref('space-4');
+    color: fn.var-ref('color-fg-muted');
+    transition: transform fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+  }
+
+  &__node[aria-expanded='true'] > &__label > &__toggle {
+    transform: rotate(90deg);
+  }
+
+  // Leaf nodes have no toggle — keep the label text aligned with branches.
+  &__spacer {
+    inline-size: fn.var-ref('space-4');
+  }
+
+  // Touch input: give each row a comfortable tap target (WCAG 2.5.5 Target
+  // Size, AAA). The whole row selects/expands, so enlarging the label row is
+  // enough. Fine pointers (mouse) keep the denser rows above.
+  @media (pointer: coarse) {
+    &__label {
+      min-block-size: fn.var-ref('space-12'); // 48px (≥ 44px AAA target)
+      padding-block: fn.var-ref('space-2');
+    }
+  }
+}

@@ -1,0 +1,103 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Calendar — an inline month grid for date selection (the DatePicker's calendar
+// without the popup). The selected day is conveyed by fill + aria-pressed.
+// =============================================================================
+
+$root: '.#{cfg.class-name(calendar)}';
+
+#{$root} {
+  display: inline-block;
+  padding: fn.var-ref('space-3');
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-lg');
+
+  &__header {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: fn.var-ref('space-2');
+  }
+
+  &__title {
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: fn.var-ref('control-h-sm');
+    block-size: fn.var-ref('control-h-sm');
+    color: fn.var-ref('color-fg-muted');
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-sm');
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    @include mx.focus-ring;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: fn.var-ref('space-1');
+  }
+
+  &__weekday {
+    padding-block: fn.var-ref('space-1');
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-muted');
+    text-align: center;
+  }
+
+  &__day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    min-inline-size: fn.var-ref('control-h-sm');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid transparent;
+    border-radius: fn.var-ref('radius-sm');
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    @include mx.focus-ring;
+
+    &--today {
+      border-color: fn.var-ref('color-border-strong');
+    }
+
+    &--outside {
+      color: fn.var-ref('color-fg-subtle');
+    }
+
+    &[aria-pressed='true'] {
+      color: fn.var-ref('color-on-primary');
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+    }
+
+    &:disabled {
+      color: fn.var-ref('color-fg-subtle');
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}

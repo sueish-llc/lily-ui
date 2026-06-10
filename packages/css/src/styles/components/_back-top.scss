@@ -1,0 +1,39 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// BackTop — a floating button that scrolls back to the top of the page once the
+// user has scrolled past a threshold.
+// =============================================================================
+
+$root: '.#{cfg.class-name(back-top)}';
+
+#{$root} {
+  position: fixed;
+  inset-block-end: fn.var-ref('space-6');
+  inset-inline-end: fn.var-ref('space-6');
+  z-index: fn.var-ref('z-sticky');
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: fn.var-ref('control-h-lg');
+  block-size: fn.var-ref('control-h-lg');
+  color: fn.var-ref('color-on-primary');
+  cursor: pointer;
+  background-color: fn.var-ref('color-primary');
+  border: 0;
+  border-radius: fn.var-ref('radius-circle');
+  box-shadow: fn.var-ref('shadow-lg');
+  transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  &:hover {
+    background-color: fn.var-ref('color-primary-hover');
+  }
+
+  @include mx.focus-ring;
+
+  &[hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,50 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// HoverCard — a floating card shown on hover/focus. Reuses the Popover surface
+// (background, border, shadow) and adds placement modifiers for positioning.
+// =============================================================================
+
+$root: '.#{cfg.class-name(hover-card)}';
+
+#{$root} {
+  position: absolute;
+  z-index: fn.var-ref('z-popover');
+  inline-size: max-content;
+  max-inline-size: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-6')}));
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+  box-shadow: fn.var-ref('shadow-lg');
+
+  &[hidden] {
+    display: none;
+  }
+
+  // --- Placement -----------------------------------------------------------
+  &--bottom {
+    inset-block-start: calc(100% + #{fn.var-ref('space-2')});
+    inset-inline-start: 0;
+  }
+
+  &--top {
+    inset-block-end: calc(100% + #{fn.var-ref('space-2')});
+    inset-inline-start: 0;
+  }
+
+  &--right {
+    inset-inline-start: calc(100% + #{fn.var-ref('space-2')});
+    inset-block-start: 0;
+  }
+
+  &--left {
+    inset-inline-end: calc(100% + #{fn.var-ref('space-2')});
+    inset-block-start: 0;
+  }
+
+  &__body {
+    padding: fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-default');
+  }
+}
