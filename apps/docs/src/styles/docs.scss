@@ -1,0 +1,1192 @@
+@charset "UTF-8";
+
+/* ───────────────────────────────────────────────────────────────────────────
+ * Lily UI docs — chrome styling.
+ * Everything visual comes from @lily-ui/css semantic tokens (--lily-*), so the
+ * site changes with the theme and stays AAA in both light and dark. The brand
+ * typeface — LINE Seed JP, the design system's own font — is loaded from Google
+ * Fonts (in Base.astro) and used for both body and display.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --font-display: 'LINE Seed JP', var(--lily-font-sans, system-ui), sans-serif;
+  --doc-max: 72rem;
+  --doc-gutter: var(--lily-space-6, 1.5rem);
+  --header-h: 4rem;
+
+  /* Copy / check glyphs used as masks on copyable chips (currentColor fill). */
+  --ico-copy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='11' height='11' rx='2'/%3E%3Cpath d='M5 15V5a2 2 0 0 1 2-2h8'/%3E%3C/svg%3E");
+  --ico-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      120% 80% at 100% 0%,
+      color-mix(in oklab, var(--lily-color-accent-subtle) 60%, transparent),
+      transparent 60%
+    ),
+    var(--lily-color-bg-canvas);
+  color: var(--lily-color-fg-default);
+  font-family: var(--lily-font-sans, system-ui, sans-serif);
+  line-height: var(--lily-leading-relaxed, 1.7);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: var(--lily-leading-snug, 1.3);
+  text-wrap: balance;
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: var(--lily-color-primary-text);
+  text-underline-offset: 0.18em;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--lily-color-focus-ring, var(--lily-color-primary));
+  outline-offset: 2px;
+  border-radius: var(--lily-radius-sm, 6px);
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.5rem 0.9rem;
+  background: var(--lily-color-bg-surface);
+  color: var(--lily-color-fg-default);
+  border: 1px solid var(--lily-color-border-strong);
+  border-radius: var(--lily-radius-md, 10px);
+  transform: translateY(-160%);
+  transition: transform 160ms ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: saturate(1.4) blur(10px);
+  background: color-mix(in oklab, var(--lily-color-bg-surface) 82%, transparent);
+  border-bottom: 1px solid var(--lily-color-border-default);
+}
+.site-header__inner {
+  max-width: var(--doc-max);
+  margin-inline: auto;
+  min-height: var(--header-h);
+  padding-inline: var(--doc-gutter);
+  display: flex;
+  align-items: center;
+  gap: var(--lily-space-4, 1rem);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--lily-color-fg-default);
+  font-weight: 700;
+}
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+.site-nav {
+  display: flex;
+  gap: var(--lily-space-4, 1rem);
+  margin-inline-start: auto;
+}
+.site-nav a {
+  color: var(--lily-color-fg-muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+.site-nav a:hover {
+  color: var(--lily-color-fg-default);
+}
+
+/* GitHub / Storybook links with the brand mark to the left of the label. */
+.gh-link,
+.sb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.gh-mark,
+.sb-mark {
+  flex: none;
+}
+.site-header__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--lily-space-3, 0.75rem);
+}
+
+/* Small screens: drop the secondary nav links (reachable from the page +
+   sidebar) and the theme label so the bar never overflows. */
+@media (max-width: 40rem) {
+  .site-header__inner {
+    gap: var(--lily-space-2, 0.5rem);
+    padding-inline: var(--lily-space-4, 1rem);
+  }
+  .site-nav {
+    display: none;
+  }
+  .site-header__tools {
+    margin-inline-start: auto;
+    gap: var(--lily-space-2, 0.5rem);
+  }
+  .theme-toggle__label {
+    display: none;
+  }
+  .lang-switch__item {
+    padding-inline: 0.55rem;
+  }
+}
+
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-pill, 999px);
+  overflow: hidden;
+}
+.lang-switch__item {
+  padding: 0.25rem 0.7rem;
+  font-size: var(--lily-text-sm, 0.875rem);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--lily-color-fg-muted);
+}
+.lang-switch__item[aria-current='true'] {
+  background: var(--lily-color-primary);
+  color: var(--lily-color-on-primary, #fff);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: var(--lily-text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--lily-color-fg-default);
+  background: var(--lily-color-bg-surface);
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-pill, 999px);
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  border-color: var(--lily-color-border-strong);
+}
+.theme-toggle__label {
+  min-width: 3.2em;
+  text-align: start;
+}
+
+/* ── Layout shells ──────────────────────────────────────────────────────── */
+
+.page {
+  max-width: var(--doc-max);
+  margin-inline: auto;
+  padding: var(--lily-space-10, 2.5rem) var(--doc-gutter) var(--lily-space-16, 4rem);
+}
+
+.doc-shell {
+  max-width: var(--doc-max);
+  margin-inline: auto;
+  padding-inline: var(--doc-gutter);
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: var(--lily-space-8, 2rem);
+  align-items: start;
+}
+/* Grid items default to min-width:auto, which lets wide children (code blocks,
+   tables) push the track past the viewport. Allow them to shrink so their own
+   overflow:auto containers scroll instead. */
+.doc-shell > * {
+  min-width: 0;
+}
+/* `.page` centers itself with auto inline margins when used standalone (home);
+   inside the shell that would disable grid/flex stretch and size `main` to its
+   content (overflowing on mobile). Fill the track instead. */
+.doc-shell > main.page {
+  margin-inline: 0;
+  max-width: none;
+  width: 100%;
+}
+@media (max-width: 60rem) {
+  /* Single column: the desktop sidebar island renders nothing here (the header
+     hamburger + overlay drawer take over), so only the content remains. */
+  .doc-shell {
+    display: block;
+  }
+}
+
+/* ── Sidebar (built on the library's Drawer component) ────────────────────── */
+
+/* Astro island wrappers are transparent to layout, so the permanent Drawer
+   participates directly in the doc-shell grid column. */
+astro-island {
+  display: contents;
+}
+
+/* Permanent drawer = the desktop sidebar: sticky, fills its grid column,
+   blends with the page (keeps only the Drawer's edge border). */
+.docs-drawer.lily-drawer {
+  position: sticky;
+  top: calc(var(--header-h) + 1rem);
+  max-height: calc(100vh - var(--header-h) - 2rem);
+  inline-size: 100%;
+  background: transparent;
+}
+/* Hidden on mobile (the island also unmounts it post-hydration); the header
+   hamburger drives navigation there. Prevents a flash of the SSR'd sidebar. */
+@media (max-width: 60rem) {
+  .docs-drawer.lily-drawer {
+    display: none;
+  }
+}
+
+/* Header hamburger (mobile only; the island renders it just on narrow screens). */
+.header-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  color: var(--lily-color-fg-default);
+  background: transparent;
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-md, 10px);
+  cursor: pointer;
+}
+.header-nav-toggle:hover {
+  border-color: var(--lily-color-border-strong);
+}
+
+.sidebar {
+  padding: 0;
+}
+.sidebar__search {
+  margin-bottom: var(--lily-space-4, 1rem);
+}
+.sidebar__search-input {
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-bg-canvas);
+  color: var(--lily-color-fg-default);
+  font: inherit;
+  font-size: var(--lily-text-sm, 0.9rem);
+}
+.sidebar__search-input::placeholder {
+  color: var(--lily-color-fg-subtle);
+}
+.sidebar__search-input:focus-visible {
+  outline: 2px solid var(--lily-color-border-focus, var(--lily-color-primary));
+  outline-offset: 1px;
+  border-color: var(--lily-color-primary);
+}
+.sidebar__empty {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  color: var(--lily-color-fg-muted);
+  font-size: var(--lily-text-sm, 0.9rem);
+}
+.sidebar__group {
+  margin-bottom: var(--lily-space-5, 1.25rem);
+}
+.sidebar__title {
+  font-family: var(--font-display);
+  font-size: var(--lily-text-sm, 0.85rem);
+  letter-spacing: 0.08em;
+  color: var(--lily-color-fg-subtle);
+  text-transform: none;
+  margin: 0 0 0.4rem;
+}
+.sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar__list a {
+  display: block;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--lily-radius-md, 10px);
+  color: var(--lily-color-fg-muted);
+  text-decoration: none;
+  font-size: var(--lily-text-sm, 0.9rem);
+}
+.sidebar__list a:hover {
+  background: var(--lily-color-bg-subtle);
+  color: var(--lily-color-fg-default);
+}
+.sidebar__list a[aria-current='page'] {
+  background: var(--lily-color-primary-subtle);
+  color: var(--lily-color-primary-text);
+  font-weight: 700;
+}
+
+/* Top-level links surfaced inside the mobile drawer (Components, Storybook,
+   GitHub). They live in the header's .site-nav, which is hidden on phones, so
+   the drawer keeps them reachable. Separated from the component groups below. */
+.drawer-primary {
+  margin-bottom: var(--lily-space-4, 1rem);
+  padding-bottom: var(--lily-space-4, 1rem);
+  border-bottom: 1px solid var(--lily-color-border-default);
+}
+.drawer-primary__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.drawer-primary__list a {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--lily-radius-md, 10px);
+  color: var(--lily-color-fg-default);
+  text-decoration: none;
+  font-weight: 600;
+}
+.drawer-primary__list a svg {
+  flex: none;
+}
+.drawer-primary__list a:hover {
+  background: var(--lily-color-bg-subtle);
+  color: var(--lily-color-primary-text);
+}
+
+/* ── Hero (home) ────────────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  padding-block: var(--lily-space-16, 4rem) var(--lily-space-12, 3rem);
+}
+.hero__eyebrow {
+  display: inline-block;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  font-size: var(--lily-text-sm, 0.85rem);
+  color: var(--lily-color-accent-text);
+  margin-bottom: var(--lily-space-3, 0.75rem);
+}
+.hero__title {
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 800;
+  margin: 0 0 var(--lily-space-4, 1rem);
+  line-height: 1.12;
+}
+.hero__title .accent {
+  background: var(--lily-color-primary-gradient, var(--lily-color-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero__lede {
+  max-width: 40ch;
+  font-size: var(--lily-text-lg, 1.15rem);
+  color: var(--lily-color-fg-muted);
+  margin: 0 0 var(--lily-space-6, 1.5rem);
+}
+.hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lily-space-3, 0.75rem);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  font-weight: 700;
+  font-size: var(--lily-text-md, 1rem);
+  border-radius: var(--lily-radius-md, 10px);
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn--primary {
+  background: var(--lily-color-primary);
+  color: var(--lily-color-on-primary, #fff);
+}
+.btn--primary:hover {
+  background: var(--lily-color-primary-hover);
+}
+.btn--ghost {
+  background: var(--lily-color-bg-surface);
+  color: var(--lily-color-fg-default);
+  border-color: var(--lily-color-border-strong);
+}
+.btn--ghost:hover {
+  border-color: var(--lily-color-fg-subtle);
+}
+
+/* staggered entrance */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: reveal 0.6s var(--lily-ease-standard, ease) forwards;
+}
+.reveal-1 {
+  animation-delay: 0.05s;
+}
+.reveal-2 {
+  animation-delay: 0.15s;
+}
+.reveal-3 {
+  animation-delay: 0.25s;
+}
+.reveal-4 {
+  animation-delay: 0.35s;
+}
+@keyframes reveal {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* ── Generic section + feature cards ────────────────────────────────────── */
+
+.section {
+  padding-block: var(--lily-space-10, 2.5rem);
+}
+.section__title {
+  font-size: var(--lily-text-2xl, 1.8rem);
+  margin: 0 0 var(--lily-space-2, 0.5rem);
+}
+.section__body {
+  color: var(--lily-color-fg-muted);
+  max-width: 60ch;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--lily-space-4, 1rem);
+  margin-top: var(--lily-space-6, 1.5rem);
+}
+.feature {
+  padding: var(--lily-space-5, 1.25rem);
+  background: var(--lily-color-bg-surface);
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-lg, 14px);
+}
+.feature h3 {
+  margin: 0 0 0.4rem;
+  font-size: var(--lily-text-lg, 1.15rem);
+}
+.feature p {
+  margin: 0;
+  color: var(--lily-color-fg-muted);
+  font-size: var(--lily-text-sm, 0.92rem);
+}
+
+/* ── Catalog grid ───────────────────────────────────────────────────────── */
+
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: var(--lily-space-3, 0.75rem);
+  margin-top: var(--lily-space-5, 1.25rem);
+}
+.catalog__cat {
+  margin-top: var(--lily-space-8, 2rem);
+}
+.catalog__cat-title {
+  font-size: var(--lily-text-lg, 1.1rem);
+  border-bottom: 1px solid var(--lily-color-border-default);
+  padding-bottom: 0.3rem;
+}
+.cat-card {
+  display: block;
+  padding: var(--lily-space-4, 1rem);
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-lg, 14px);
+  background: var(--lily-color-bg-surface);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+.cat-card:hover {
+  border-color: var(--lily-color-primary);
+  transform: translateY(-2px);
+}
+.cat-card__name {
+  font-weight: 700;
+  font-size: var(--lily-text-md, 1rem);
+}
+.cat-card__desc {
+  margin: 0.25rem 0 0;
+  font-size: var(--lily-text-sm, 0.85rem);
+  color: var(--lily-color-fg-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Component page ─────────────────────────────────────────────────────── */
+
+.comp-header {
+  margin-bottom: var(--lily-space-6, 1.5rem);
+}
+.comp-eyebrow {
+  font-weight: 700;
+  font-size: var(--lily-text-sm, 0.85rem);
+  letter-spacing: 0.08em;
+  color: var(--lily-color-accent-text);
+}
+.comp-title {
+  font-size: var(--lily-text-3xl, 2.4rem);
+  margin: 0.2rem 0 0.6rem;
+}
+.comp-summary {
+  font-size: var(--lily-text-lg, 1.1rem);
+  color: var(--lily-color-fg-muted);
+  max-width: 60ch;
+  margin: 0;
+}
+.comp-frameworks {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: var(--lily-space-4, 1rem);
+  flex-wrap: wrap;
+}
+/* "View in Storybook" deep link under the component header. */
+.comp-sb-link {
+  margin-top: var(--lily-space-4, 1rem);
+  font-weight: 600;
+  color: var(--lily-color-fg-muted);
+  text-decoration: none;
+}
+.comp-sb-link:hover {
+  color: var(--lily-color-fg-default);
+}
+.fw-badge {
+  font-size: var(--lily-text-xs, 0.75rem);
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--lily-radius-pill, 999px);
+  background: var(--lily-color-accent-subtle);
+  color: var(--lily-color-accent-text);
+}
+
+.comp-section {
+  margin-top: var(--lily-space-10, 2.5rem);
+}
+.comp-section > h2 {
+  font-size: var(--lily-text-xl, 1.4rem);
+  border-bottom: 1px solid var(--lily-color-border-default);
+  padding-bottom: 0.3rem;
+  margin-bottom: var(--lily-space-4, 1rem);
+}
+.translation-note {
+  font-size: var(--lily-text-sm, 0.85rem);
+  color: var(--lily-color-fg-subtle);
+}
+
+/* Prop table */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.prop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--lily-text-sm, 0.9rem);
+}
+.prop-table code {
+  white-space: nowrap;
+}
+.prop-table th,
+.prop-table td {
+  text-align: start;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--lily-color-border-default);
+  vertical-align: top;
+}
+.prop-table th {
+  color: var(--lily-color-fg-subtle);
+  font-weight: 700;
+}
+.prop-table code {
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  background: var(--lily-color-bg-subtle);
+  padding: 0.05em 0.4em;
+  border-radius: var(--lily-radius-sm, 6px);
+  color: var(--lily-color-fg-default);
+}
+.prop-req {
+  color: var(--lily-color-danger-text);
+  font-weight: 700;
+  font-size: 0.85em;
+}
+
+/* Example code blocks (static, from TSDoc) */
+.code-block {
+  margin: 0;
+  padding: var(--lily-space-4, 1rem);
+  background: var(--lily-color-bg-inverse, #14110e);
+  color: var(--lily-color-fg-inverse, #faf9f7);
+  border-radius: var(--lily-radius-lg, 14px);
+  overflow-x: auto;
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-sm, 0.85rem);
+  line-height: 1.6;
+}
+
+/* Example block with a copy button in the top-right corner. */
+.code-example {
+  position: relative;
+}
+.code-example + .code-example {
+  margin-top: var(--lily-space-3, 0.75rem);
+}
+.code-example__copy {
+  position: absolute;
+  inset-block-start: var(--lily-space-2, 0.5rem);
+  inset-inline-end: var(--lily-space-2, 0.5rem);
+  z-index: 1;
+  background: var(--lily-color-bg-surface);
+}
+
+.install-row code {
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  background: var(--lily-color-bg-subtle);
+  padding: 0.2em 0.5em;
+  border-radius: var(--lily-radius-sm, 6px);
+}
+
+/* a11y note list */
+.a11y-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.a11y-list li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: start;
+  color: var(--lily-color-fg-muted);
+}
+.a11y-list li::before {
+  content: '✓';
+  color: var(--lily-color-success-text);
+  font-weight: 800;
+}
+
+/* ── Playground island ──────────────────────────────────────────────────── */
+
+.pg {
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-xl, 20px);
+  overflow: hidden;
+  background: var(--lily-color-bg-surface);
+}
+.pg-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: 0;
+}
+.pg-stage > * {
+  min-width: 0;
+}
+@media (max-width: 48rem) {
+  .pg-stage {
+    display: block;
+  }
+}
+.pg-preview {
+  min-height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: var(--lily-space-8, 2rem);
+  // Keep the preview its own stacking context: a demo that sticks/floats with a
+  // high component z-index (Affix, …) stays inside the canvas instead of
+  // painting over the site header. Overlays that portal to <body> are
+  // unaffected.
+  //
+  // `z-index: 1` lifts the preview above the code block that follows, so an
+  // inline popover (DatePicker / DateTimePicker / Select …) that opens past the
+  // preview paints over the code instead of disappearing behind it.
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--lily-color-fg-default) 3%, transparent) 0 1px,
+      transparent 1px 12px
+    ),
+    var(--lily-color-bg-canvas);
+}
+/* Fixed-example mode: a left-aligned block so full-width components (Divider,
+   Progress, Table, …) show at their natural width, and no controls column. */
+.pg-preview--example {
+  display: block;
+}
+.pg-stage:has(.pg-preview--example) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.pg-fallback {
+  color: var(--lily-color-fg-subtle);
+  font-size: var(--lily-text-sm, 0.9rem);
+  text-align: center;
+}
+.pg-controls {
+  border-inline-start: 1px solid var(--lily-color-border-default);
+  margin: 0;
+  padding: var(--lily-space-4, 1rem);
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+@media (max-width: 48rem) {
+  .pg-controls {
+    border-inline-start: none;
+    border-top: 1px solid var(--lily-color-border-default);
+  }
+}
+.pg-controls legend {
+  font-weight: 700;
+  font-size: var(--lily-text-sm, 0.85rem);
+  color: var(--lily-color-fg-subtle);
+  padding: 0;
+}
+.pg-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.pg-control label {
+  font-size: var(--lily-text-sm, 0.8rem);
+  font-weight: 600;
+  color: var(--lily-color-fg-muted);
+  font-family: var(--lily-font-mono, monospace);
+}
+.pg-control[class] input[type='checkbox'] {
+  inline-size: 1.1rem;
+  block-size: 1.1rem;
+}
+.pg-control:has(input[type='checkbox']) {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+}
+.pg-control select,
+.pg-control input[type='text'],
+.pg-control input[type='number'] {
+  font: inherit;
+  font-size: var(--lily-text-sm, 0.85rem);
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-bg-canvas);
+  color: var(--lily-color-fg-default);
+}
+.pg-code {
+  border-top: 1px solid var(--lily-color-border-default);
+}
+.pg-tabs {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background: var(--lily-color-bg-subtle);
+  border-bottom: 1px solid var(--lily-color-border-default);
+}
+.pg-tab {
+  font: inherit;
+  font-size: var(--lily-text-sm, 0.85rem);
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--lily-radius-pill, 999px);
+  background: transparent;
+  color: var(--lily-color-fg-muted);
+  cursor: pointer;
+}
+.pg-tab[aria-pressed='true'] {
+  background: var(--lily-color-bg-surface);
+  border-color: var(--lily-color-border-default);
+  color: var(--lily-color-fg-default);
+}
+/* The code copy button floats at the top-right of the code block, so its place
+   is the same on every component (it no longer crowds the framework tabs). */
+.pg-pre-wrap {
+  position: relative;
+}
+.pg-copy {
+  position: absolute;
+  inset-block-start: var(--lily-space-2, 0.5rem);
+  inset-inline-end: var(--lily-space-2, 0.5rem);
+  z-index: 2;
+  background: var(--lily-color-bg-surface);
+}
+.pg-pre {
+  margin: 0;
+  padding: var(--lily-space-4, 1rem);
+  overflow-x: auto;
+  background: var(--lily-color-bg-inverse, #14110e);
+  color: var(--lily-color-fg-inverse, #faf9f7);
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-sm, 0.85rem);
+  line-height: 1.6;
+}
+
+/* ── Foundations: color swatches ────────────────────────────────────────── */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--lily-space-4, 1rem);
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.swatch__chip {
+  display: block;
+  block-size: 3rem;
+  border-radius: var(--lily-radius-md, 10px);
+  border: 1px solid var(--lily-color-border-default);
+}
+/* Role · 和色 label on the design-language page. */
+.wairo-label {
+  font-size: var(--lily-text-sm, 0.9rem);
+  font-weight: 600;
+  color: var(--lily-color-fg-muted);
+}
+.swatch__chip--tall {
+  block-size: 4.5rem;
+}
+.swatch code,
+.swatch-grid code {
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-xs, 0.75rem);
+  color: var(--lily-color-fg-muted);
+  word-break: break-all;
+}
+.swatch--text {
+  padding: var(--lily-space-3, 0.75rem);
+  background: var(--lily-color-bg-surface);
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-md, 10px);
+}
+.swatch__text {
+  font-size: var(--lily-text-xl, 1.4rem);
+  font-weight: 700;
+}
+
+/* ── Foundations: scales ────────────────────────────────────────────────── */
+
+.scale-list {
+  display: grid;
+  gap: 0.6rem;
+}
+.scale-row {
+  display: flex;
+  align-items: center;
+  gap: var(--lily-space-4, 1rem);
+}
+.scale-row code,
+.type-row code {
+  min-inline-size: 5rem;
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-xs, 0.75rem);
+  color: var(--lily-color-fg-subtle);
+}
+.scale-bar {
+  display: block;
+  block-size: 0.85rem;
+  border-radius: var(--lily-radius-pill, 999px);
+  background: var(--lily-color-primary);
+}
+.radius-box {
+  display: block;
+  block-size: 3.5rem;
+  background: var(--lily-color-primary-subtle);
+  border: 1px solid var(--lily-color-primary);
+}
+.shadow-box {
+  display: block;
+  block-size: 3.5rem;
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-bg-surface);
+}
+.type-list {
+  display: grid;
+  gap: 0.5rem;
+}
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--lily-space-4, 1rem);
+}
+
+/* ── Foundations: motion showcase ───────────────────────────────────────── */
+
+.motion {
+  display: grid;
+  gap: var(--lily-space-8, 2rem);
+}
+.motion-group {
+  position: relative;
+}
+.motion-group__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--lily-space-3, 0.75rem);
+}
+.motion-group__head h3 {
+  margin: 0;
+  font-size: var(--lily-text-lg, 1.15rem);
+}
+.motion-count {
+  font-size: var(--lily-text-sm, 0.8rem);
+  color: var(--lily-color-fg-subtle);
+}
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: var(--lily-space-3, 0.75rem);
+}
+.motion-grid--wide {
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+.motion-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--lily-space-4, 1rem) 0.5rem;
+  background: var(--lily-color-bg-surface);
+  border: 1px solid var(--lily-color-border-default);
+  border-radius: var(--lily-radius-lg, 14px);
+  overflow: hidden;
+}
+.motion-tile code {
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-xs, 0.72rem);
+  color: var(--lily-color-fg-muted);
+  text-align: center;
+  word-break: break-word;
+}
+/* Play area — click or hover to (re)play the animation. */
+.motion-tile__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 2.6rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.motion-tile__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.motion-dot {
+  inline-size: 1.8rem;
+  block-size: 1.8rem;
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-primary-gradient, var(--lily-color-primary));
+}
+.motion-fx-text {
+  font-size: var(--lily-text-xl, 1.3rem);
+  font-weight: 800;
+}
+.motion-fx-box {
+  inline-size: 2.4rem;
+  block-size: 2.4rem;
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-accent-gradient, var(--lily-color-accent));
+}
+.motion-fx-panel {
+  display: block;
+  inline-size: 100%;
+  block-size: 3.5rem;
+  border-radius: var(--lily-radius-md, 10px);
+  background: var(--lily-color-bg-subtle);
+}
+.motion-hint {
+  font-size: var(--lily-text-xs, 0.7rem);
+  color: var(--lily-color-fg-subtle);
+}
+.motion-replay {
+  margin-inline-start: auto;
+  font: inherit;
+  font-size: var(--lily-text-sm, 0.8rem);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--lily-radius-pill, 999px);
+  border: 1px solid var(--lily-color-border-default);
+  background: var(--lily-color-bg-surface);
+  color: var(--lily-color-fg-default);
+  cursor: pointer;
+}
+.motion-replay:hover {
+  border-color: var(--lily-color-border-strong);
+}
+
+/* ── Footer (library Footer component) ──────────────────────────────────── */
+
+.docs-footer .lily-footer__inner {
+  max-width: var(--doc-max);
+  margin-inline: auto;
+  font-size: var(--lily-text-sm, 0.875rem);
+}
+.docs-footer p {
+  margin: 0;
+}
+.docs-footer__legal {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+@media (max-width: 36rem) {
+  .docs-footer .lily-footer__inner {
+    justify-content: flex-start;
+  }
+}
+
+/* ── Foundations: palette ramps (Storybook-style) ───────────────────────── */
+
+.palette-ramp {
+  margin-bottom: var(--lily-space-6, 1.5rem);
+}
+.palette-ramp__name {
+  font-size: var(--lily-text-md, 1rem);
+  margin: 0 0 var(--lily-space-2, 0.5rem);
+}
+.palette-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: var(--lily-space-3, 0.75rem);
+}
+.palette-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.palette-chip__swatch {
+  display: flex;
+  align-items: flex-start;
+  block-size: 3rem;
+  padding: 0.25rem;
+  border-radius: var(--lily-radius-md, 10px);
+  border: 1px solid var(--lily-color-border-default);
+}
+.palette-chip__step {
+  font-weight: 700;
+  font-size: var(--lily-text-xs, 0.72rem);
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+  border-radius: var(--lily-radius-sm, 6px);
+  /* legible on any swatch colour */
+  background: rgba(255, 255, 255, 0.82);
+  color: #14110e;
+}
+
+/* Click-to-copy chips (palette var/hex + semantic token names). A copy glyph
+   marks them as copyable; it swaps to a check after a successful copy. */
+.copy {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  inline-size: 100%;
+  text-align: start;
+  font-family: var(--lily-font-mono, ui-monospace, monospace);
+  font-size: var(--lily-text-xs, 0.72rem);
+  color: var(--lily-color-fg-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--lily-radius-sm, 6px);
+  padding: 0.15rem 0.35rem;
+  cursor: pointer;
+  word-break: break-all;
+}
+.copy::before {
+  content: '';
+  flex: none;
+  inline-size: 0.95em;
+  block-size: 0.95em;
+  background-color: currentColor;
+  -webkit-mask: var(--ico-copy) center / contain no-repeat;
+  mask: var(--ico-copy) center / contain no-repeat;
+}
+.copy:hover {
+  background: var(--lily-color-bg-subtle);
+  color: var(--lily-color-fg-default);
+}
+.copy.is-copied {
+  color: var(--lily-color-success-text);
+  border-color: var(--lily-color-success);
+}
+.copy.is-copied::before {
+  -webkit-mask-image: var(--ico-check);
+  mask-image: var(--ico-check);
+}

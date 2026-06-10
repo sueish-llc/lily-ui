@@ -1,0 +1,71 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Modal — a centered dialog over a backdrop.
+// =============================================================================
+
+$root: '.#{cfg.class-name(modal)}';
+
+.#{cfg.class-name(backdrop)} {
+  position: fixed;
+  inset: 0;
+  z-index: fn.var-ref('z-backdrop');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: fn.var-ref('space-4');
+  background-color: rgb(0 0 0 / 50%);
+}
+
+#{$root} {
+  z-index: fn.var-ref('z-modal');
+  display: flex;
+  flex-direction: column;
+
+  // Fill the available width on small screens, capped at the size token so it
+  // never exceeds the viewport (the backdrop adds padding around it).
+  width: 100%;
+  max-width: fn.var-ref('size-md');
+  max-height: calc(100vh - #{fn.var-ref('space-12')});
+  overflow: hidden;
+  background-color: fn.var-ref('color-bg-surface');
+  border-radius: fn.var-ref('radius-lg');
+  box-shadow: fn.var-ref('shadow-xl');
+
+  &--sm {
+    max-width: fn.var-ref('size-sm');
+  }
+
+  &--lg {
+    max-width: fn.var-ref('size-lg');
+  }
+
+  &__header {
+    display: flex;
+    gap: fn.var-ref('space-3');
+    align-items: center;
+    justify-content: space-between;
+    padding: fn.var-ref('space-4');
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__title {
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: fn.var-ref('space-4');
+    overflow-y: auto;
+  }
+
+  &__footer {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    justify-content: flex-end;
+    padding: fn.var-ref('space-4');
+    border-top: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+}

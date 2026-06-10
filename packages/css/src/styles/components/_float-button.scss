@@ -1,0 +1,217 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// FloatButton — a floating action button fixed to a viewport corner.
+// Reuses Button's token conventions; position, shape, size, and status as
+// modifiers. FloatButtonGroup adds a speed-dial: a trigger toggles child items.
+// =============================================================================
+
+$root: '.#{cfg.class-name(float-button)}';
+$group: '.#{cfg.class-name(float-button-group)}';
+
+// ── Standalone float button ───────────────────────────────────────────────────
+
+#{$root} {
+  position: fixed;
+  z-index: fn.var-ref('z-fixed');
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: fn.var-ref('font-sans');
+  font-weight: fn.var-ref('weight-bold');
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  background-color: fn.var-ref('color-primary');
+  color: fn.var-ref('color-on-primary');
+  border: none;
+  box-shadow: fn.var-ref('shadow-lg');
+  transition:
+    background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+    box-shadow fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+    transform fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  @include mx.focus-ring;
+
+  &:hover:not(:disabled) {
+    background-color: fn.var-ref('color-primary-hover');
+    box-shadow: fn.var-ref('shadow-xl');
+  }
+
+  &:active:not(:disabled) {
+    background-color: fn.var-ref('color-primary-active');
+    transform: scale(0.95);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // --- Positions ---------------------------------------------------------------
+
+  &--bottom-right {
+    inset-block-end: fn.var-ref('space-6');
+    inset-inline-end: fn.var-ref('space-6');
+  }
+
+  &--bottom-left {
+    inset-block-end: fn.var-ref('space-6');
+    inset-inline-start: fn.var-ref('space-6');
+  }
+
+  &--top-right {
+    inset-block-start: fn.var-ref('space-6');
+    inset-inline-end: fn.var-ref('space-6');
+  }
+
+  &--top-left {
+    inset-block-start: fn.var-ref('space-6');
+    inset-inline-start: fn.var-ref('space-6');
+  }
+
+  // --- Sizes -------------------------------------------------------------------
+
+  &--sm {
+    width: fn.var-ref('control-h-sm');
+    height: fn.var-ref('control-h-sm');
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &--md {
+    width: fn.var-ref('control-h-md');
+    height: fn.var-ref('control-h-md');
+    font-size: fn.var-ref('text-lg');
+  }
+
+  &--lg {
+    width: fn.var-ref('control-h-lg');
+    height: fn.var-ref('control-h-lg');
+    font-size: fn.var-ref('text-xl');
+  }
+
+  // --- Shapes ------------------------------------------------------------------
+
+  &--circle {
+    border-radius: fn.var-ref('radius-circle');
+  }
+
+  &--square {
+    border-radius: fn.var-ref('radius-lg');
+  }
+
+  // --- Status color overrides (mirrors Button pattern) -------------------------
+
+  &[data-status='danger'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-danger')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-danger-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-danger-hover')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-danger')};
+  }
+
+  &[data-status='success'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-success')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-success-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-success-hover')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-success')};
+  }
+
+  &[data-status='warning'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-warning')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-warning-hover')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-warning-hover')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-warning')};
+  }
+
+  &[data-status='neutral'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-fg-default')};
+    --#{cfg.$prefix}-color-primary-hover: #{fn.var-ref('color-fg-muted')};
+    --#{cfg.$prefix}-color-primary-active: #{fn.var-ref('color-fg-muted')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-bg-surface')};
+  }
+}
+
+// ── FloatButtonGroup (speed-dial) ────────────────────────────────────────────
+
+#{$group} {
+  position: fixed;
+  z-index: fn.var-ref('z-fixed');
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-3');
+  align-items: center;
+
+  // The group's own position classes anchor the whole stack.
+  &--bottom-right {
+    inset-block-end: fn.var-ref('space-6');
+    inset-inline-end: fn.var-ref('space-6');
+    flex-direction: column-reverse;
+  }
+
+  &--bottom-left {
+    inset-block-end: fn.var-ref('space-6');
+    inset-inline-start: fn.var-ref('space-6');
+    flex-direction: column-reverse;
+  }
+
+  &--top-right {
+    inset-block-start: fn.var-ref('space-6');
+    inset-inline-end: fn.var-ref('space-6');
+  }
+
+  &--top-left {
+    inset-block-start: fn.var-ref('space-6');
+    inset-inline-start: fn.var-ref('space-6');
+  }
+
+  // Override position on children — the group handles placement.
+  #{$root} {
+    position: static;
+  }
+
+  // The trigger rotates 45° when open (+ → ×) as a visual affordance.
+  &__trigger {
+    position: static;
+    transition:
+      background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      transform fn.var-ref('duration-base') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+  }
+
+  &--open &__trigger {
+    transform: rotate(45deg);
+  }
+
+  // Child items container — hidden by default, revealed when open.
+  &__items {
+    display: flex;
+    flex-direction: inherit;
+    gap: fn.var-ref('space-3');
+    align-items: center;
+    overflow: hidden;
+
+    // Collapsed state.
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      max-height fn.var-ref('duration-base') fn.var-ref('ease-standard'),
+      opacity fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+  }
+
+  &--open &__items {
+    max-height: 400px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

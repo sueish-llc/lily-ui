@@ -1,0 +1,45 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Tooltip & Popover — floating descriptive overlays.
+// =============================================================================
+
+.#{cfg.class-name(tooltip)} {
+  position: absolute;
+  z-index: fn.var-ref('z-tooltip');
+  max-width: fn.var-ref('size-xs');
+  padding: fn.var-ref('space-1') fn.var-ref('space-2');
+  font-size: fn.var-ref('text-sm');
+  color: fn.var-ref('color-bg-surface');
+  background-color: fn.var-ref('color-fg-default');
+  border-radius: fn.var-ref('radius-sm');
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.#{cfg.class-name(popover)} {
+  position: absolute;
+  z-index: fn.var-ref('z-popover');
+  max-width: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-6')}));
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+  box-shadow: fn.var-ref('shadow-lg');
+
+  &[hidden] {
+    display: none;
+  }
+
+  &__header {
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    font-weight: fn.var-ref('weight-bold');
+    border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__body {
+    padding: fn.var-ref('space-3');
+  }
+}

@@ -1,0 +1,13 @@
+@use '../abstracts/config' as cfg;
+
+// =============================================================================
+// ThemeOverride — a transparent wrapper that re-scopes the semantic
+// `--lily-color-*` tokens for its subtree. The actual values come from the
+// scoped <style> the component generates; the wrapper itself must not affect
+// layout, so it renders as `display: contents` (custom properties still
+// inherit to descendants).
+// =============================================================================
+
+.#{cfg.class-name(theme-override)} {
+  display: contents;
+}

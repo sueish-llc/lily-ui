@@ -1,0 +1,18 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Time-zone select — a thin wrapper around the native Select. It only provides
+// a layout box; the inner control reuses the shared `.lily-select` styling so
+// the dropdown matches every other select in the system.
+// =============================================================================
+
+$root: '.#{cfg.class-name(time-zone-select)}';
+
+#{$root} {
+  display: inline-flex;
+
+  > .#{cfg.class-name(select)} {
+    width: 100%;
+  }
+}

@@ -1,0 +1,85 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// RangeDual — a two-thumb range (min/max) for selecting a span. Two native
+// <input type="range"> elements are overlaid on a shared track so each thumb
+// keeps full keyboard support; only the thumbs receive pointer events. The
+// filled segment between thumbs is positioned via the --lily-range-min/max
+// custom properties (percentages set by the component).
+// =============================================================================
+
+$root: '.#{cfg.class-name(range-dual)}';
+
+#{$root} {
+  --#{cfg.$prefix}-range-min: 0%;
+  --#{cfg.$prefix}-range-max: 100%;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  block-size: fn.var-ref('control-h-md');
+
+  &__track {
+    position: absolute;
+    inset-inline: 0;
+    block-size: fn.var-ref('space-1');
+    background-color: fn.var-ref('color-bg-muted');
+    border-radius: fn.var-ref('radius-pill');
+  }
+
+  &__fill {
+    position: absolute;
+    inset-inline: var(--#{cfg.$prefix}-range-min) calc(100% - var(--#{cfg.$prefix}-range-max));
+    block-size: fn.var-ref('space-1');
+    background-color: fn.var-ref('color-primary');
+    border-radius: fn.var-ref('radius-pill');
+  }
+
+  &__input {
+    position: absolute;
+    inline-size: 100%;
+    margin: 0;
+    pointer-events: none;
+    background: transparent;
+    appearance: none;
+
+    &::-webkit-slider-thumb {
+      pointer-events: auto;
+      inline-size: fn.var-ref('space-5');
+      block-size: fn.var-ref('space-5');
+      background-color: fn.var-ref('color-primary');
+      border: fn.var-ref('border-thick') solid fn.var-ref('color-bg-surface');
+      border-radius: fn.var-ref('radius-circle');
+      box-shadow: fn.var-ref('shadow-sm');
+      appearance: none;
+    }
+
+    &::-moz-range-thumb {
+      pointer-events: auto;
+      inline-size: fn.var-ref('space-5');
+      block-size: fn.var-ref('space-5');
+      background-color: fn.var-ref('color-primary');
+      border: fn.var-ref('border-thick') solid fn.var-ref('color-bg-surface');
+      border-radius: fn.var-ref('radius-circle');
+    }
+
+    &::-webkit-slider-runnable-track {
+      background: transparent;
+    }
+
+    &::-moz-range-track {
+      background: transparent;
+    }
+
+    &:focus-visible::-webkit-slider-thumb {
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: fn.var-ref('border-thin');
+    }
+
+    &:focus-visible::-moz-range-thumb {
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: fn.var-ref('border-thin');
+    }
+  }
+}

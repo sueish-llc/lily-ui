@@ -1,0 +1,121 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// TreeSelect — a trigger button that opens a tree-structured selection panel.
+// Reuses dropdown/tree token patterns; the trigger mirrors the combobox/select
+// styling for visual consistency.
+// =============================================================================
+
+$root: '.#{cfg.class-name(tree-select)}';
+
+#{$root} {
+  position: relative;
+  display: inline-block;
+
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: fn.var-ref('space-2');
+    inline-size: 100%;
+    block-size: fn.var-ref('control-h-md');
+    padding-inline: fn.var-ref('space-3');
+    font: inherit;
+    font-size: fn.var-ref('text-md');
+    color: fn.var-ref('color-fg-default');
+    text-align: start;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    transition: border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+
+    @include mx.focus-ring;
+
+    &:hover:not([disabled]) {
+      border-color: fn.var-ref('color-border-strong');
+    }
+
+    &[disabled],
+    &--disabled {
+      color: fn.var-ref('color-fg-subtle');
+      cursor: not-allowed;
+      background-color: fn.var-ref('color-bg-subtle');
+      border-color: fn.var-ref('color-border-default');
+    }
+
+    &--sm {
+      block-size: fn.var-ref('control-h-sm');
+      font-size: fn.var-ref('text-sm');
+      padding-inline: fn.var-ref('space-2');
+    }
+
+    &--lg {
+      block-size: fn.var-ref('control-h-lg');
+      font-size: fn.var-ref('text-lg');
+      padding-inline: fn.var-ref('space-4');
+    }
+  }
+
+  &__value {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--placeholder {
+      color: fn.var-ref('color-fg-subtle');
+    }
+  }
+
+  &__chevron {
+    flex: 0 0 auto;
+    color: fn.var-ref('color-fg-muted');
+    transition: transform fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+  }
+
+  &__trigger[aria-expanded='true'] &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__panel {
+    position: absolute;
+    z-index: fn.var-ref('z-dropdown');
+    min-inline-size: 100%;
+    max-inline-size: calc(100vw - #{fn.var-ref('space-6')});
+    max-block-size: 18rem;
+    padding: fn.var-ref('space-1');
+    margin-block-start: fn.var-ref('space-1');
+    overflow-y: auto;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    box-shadow: fn.var-ref('shadow-lg');
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__tree {
+    // The embedded tree fills the panel width.
+    min-inline-size: 100%;
+  }
+
+  // Touch input: a larger trigger so opening the panel is comfortable
+  // (WCAG 2.5.5 Target Size, AAA). The tree rows inside get the same treatment.
+  @media (pointer: coarse) {
+    &__trigger {
+      min-block-size: fn.var-ref('control-h-lg'); // 48px (≥ 44px AAA target)
+    }
+  }
+}

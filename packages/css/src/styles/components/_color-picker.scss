@@ -1,0 +1,58 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// ColorPicker — a swatch palette plus a native color input for custom values.
+// Swatches are radio-like toggle buttons; the selected one shows a ring.
+// =============================================================================
+
+$root: '.#{cfg.class-name(color-picker)}';
+
+#{$root} {
+  display: inline-flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-3');
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: fn.var-ref('space-2');
+  }
+
+  &__swatch {
+    inline-size: fn.var-ref('space-6');
+    block-size: fn.var-ref('space-6');
+    padding: 0;
+    cursor: pointer;
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-sm');
+
+    @include mx.focus-ring;
+
+    &[aria-pressed='true'] {
+      box-shadow: 0 0 0 fn.var-ref('border-thick') fn.var-ref('color-bg-surface'),
+        0 0 0 calc(2 * #{fn.var-ref('border-thick')}) fn.var-ref('color-primary');
+    }
+  }
+
+  &__custom {
+    display: inline-flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__input {
+    inline-size: fn.var-ref('control-h-md');
+    block-size: fn.var-ref('control-h-md');
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-sm');
+
+    @include mx.focus-ring;
+  }
+}

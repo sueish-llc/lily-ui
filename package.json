@@ -1,0 +1,43 @@
+{
+  "name": "lily-ui-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lily UI — a token-driven, accessible (WCAG 2.1 AAA), SSR/SSG-ready design system. Ships as a framework-agnostic CSS library (@lily-ui/css) plus matching component libraries for React (@lily-ui/react), Vue (@lily-ui/vue), and Web Components (@lily-ui/web-components).",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "engines": {
+    "node": ">=26",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" build",
+    "dev": "pnpm --filter @lily-ui/storybook dev",
+    "storybook": "pnpm --filter @lily-ui/storybook dev",
+    "build-storybook": "pnpm --filter @lily-ui/storybook build",
+    "build:pages": "pnpm build && rm -rf dist-pages && DOCS_OUT_DIR=../../dist-pages pnpm --filter @lily-ui/docs build && STORYBOOK_BASE_PATH=/lily-ui/storybook/ pnpm --filter @lily-ui/storybook build -o ../../dist-pages/storybook",
+    "test": "pnpm -r --filter \"./packages/*\" test",
+    "test:a11y": "pnpm --filter @lily-ui/react test:a11y",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . && stylelint \"packages/**/*.scss\"",
+    "format": "prettier --write .",
+    "new": "node scripts/new-component.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-vue": "^10.9.2",
+    "prettier": "^3.3.0",
+    "stylelint": "^16.10.0",
+    "stylelint-config-standard-scss": "^13.1.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.10.0"
+  }
+}

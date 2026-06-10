@@ -1,0 +1,92 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// CommandPalette — a ⌘K overlay with a search field and a filtered command
+// list. Built over a backdrop; the dialog sits near the top of the viewport.
+// =============================================================================
+
+$root: '.#{cfg.class-name(command-palette)}';
+
+#{$root} {
+  position: fixed;
+  inset: 0;
+  z-index: fn.var-ref('z-modal');
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: fn.var-ref('space-16') fn.var-ref('space-4') fn.var-ref('space-4');
+  background-color: rgb(0 0 0 / 50%);
+
+  &__dialog {
+    display: flex;
+    flex-direction: column;
+    inline-size: fn.var-ref('size-md');
+    max-inline-size: 100%;
+    max-block-size: 70vh;
+    overflow: hidden;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-lg');
+    box-shadow: fn.var-ref('shadow-xl');
+  }
+
+  &__input {
+    padding: fn.var-ref('space-3') fn.var-ref('space-4');
+    font-size: fn.var-ref('text-lg');
+    color: fn.var-ref('color-fg-default');
+    background: transparent;
+    border: 0;
+    border-block-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__list {
+    padding: fn.var-ref('space-1');
+    margin: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  &__group {
+    padding: fn.var-ref('space-2') fn.var-ref('space-3') fn.var-ref('space-1');
+    font-size: fn.var-ref('text-xs');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-subtle');
+    text-transform: uppercase;
+    letter-spacing: fn.var-ref('tracking-wide');
+  }
+
+  &__item {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    inline-size: 100%;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-default');
+    text-align: start;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-sm');
+
+    &--active {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+  }
+
+  &__shortcut {
+    margin-inline-start: auto;
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__empty {
+    padding: fn.var-ref('space-4');
+    color: fn.var-ref('color-fg-muted');
+    text-align: center;
+  }
+}

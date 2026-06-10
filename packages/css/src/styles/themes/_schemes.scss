@@ -1,0 +1,145 @@
+@use 'sass:map';
+@use '../tokens/primitives' as p;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Semantic color schemes
+// -----------------------------------------------------------------------------
+// Semantic tokens describe *intent* (e.g. "the default foreground color"),
+// mapped onto primitive palette values. Components only ever reference these,
+// which is what makes theming a one-file change.
+//
+// Each scheme is a flat map of `semantic-name: value`. Light and dark share the
+// same keys, guaranteeing every component works in both modes.
+//
+// Contrast note: text/background pairings target WCAG 2.1 AAA (>= 7:1 body
+// text, >= 4.5:1 large text; >= 3:1 for non-text / UI boundaries). The solid
+// status/action fills (primary, danger, success, info) are deepened so their
+// on-fill text (white in light mode, near-black in dark mode) clears 7:1 in the
+// default state — filled controls are AAA, not just AA. (`warning` keeps its
+// yellow with near-black text; its transient hover is ~6.3:1 / AAA-large.) The
+// `accent` (藤) ramp stays vivid for emphasis & decoration — no component
+// renders body text on an accent fill. The color-*-text tokens carry AAA for
+// small colored text on neutral surfaces. See docs/accessibility.md.
+// =============================================================================
+
+@function _c($ramp, $step) {
+  @return fn.token(fn.token(p.$palette, $ramp), $step);
+}
+
+$light: (
+  'color-bg-canvas': _c('neutral', 50),
+  'color-bg-surface': _c('neutral', 0),
+  'color-bg-subtle': _c('neutral', 100),
+  'color-bg-muted': _c('neutral', 200),
+  'color-bg-inverse': _c('neutral', 900),
+  'color-fg-default': _c('neutral', 900),
+  'color-fg-muted': _c('neutral', 700),
+  'color-fg-subtle': _c('neutral', 600),
+  'color-fg-on-emphasis': _c('neutral', 0),
+  'color-fg-inverse': _c('neutral', 0),
+  'color-border-default': _c('neutral', 200),
+  'color-border-strong': _c('neutral', 300),
+  'color-border-focus': _c('brand', 500),
+  // AAA: white text on primary fill needs >= 7:1, so the resting fill is the
+  // 700 step (8.6:1). Hover/active deepen further.
+  'color-primary': _c('brand', 700),
+  'color-primary-hover': _c('brand', 800),
+  'color-primary-active': _c('brand', 900),
+  'color-primary-subtle': _c('brand', 50),
+  'color-on-primary': _c('neutral', 0),
+  // Accent (藤 fuji) — emphasis & decoration, never status.
+  'color-accent': _c('fuji', 500),
+  'color-accent-hover': _c('fuji', 600),
+  'color-accent-active': _c('fuji', 700),
+  'color-accent-subtle': _c('fuji', 50),
+  'color-on-accent': _c('neutral', 0),
+  // Signature gradients — the 彩 fingerprint. Use sparingly (≈1 per screen).
+  'color-primary-gradient': linear-gradient(135deg, _c('brand', 400), _c('brand', 600)),
+  'color-accent-gradient': linear-gradient(135deg, _c('fuji', 400), _c('sakura', 400)),
+  'color-danger': _c('red', 700),
+  'color-danger-hover': _c('red', 800),
+  'color-danger-subtle': _c('red', 50),
+  'color-on-danger': _c('neutral', 0),
+  // warning keeps its yellow + near-black text (8.7:1). Unlike the other hues
+  // (which darken on hover), amber *lightens* on hover — mirroring the dark
+  // theme — so the near-black text stays AAA; amber-600 would drop it to 6.3:1.
+  'color-warning': _c('amber', 500),
+  'color-warning-hover': _c('amber', 300),
+  'color-warning-subtle': _c('amber', 50),
+  'color-on-warning': _c('neutral', 950),
+  'color-success': _c('green', 700),
+  'color-success-hover': _c('green', 800),
+  'color-success-subtle': _c('green', 50),
+  'color-on-success': _c('neutral', 0),
+  'color-info': _c('blue', 600),
+  'color-info-hover': _c('blue', 700),
+  'color-info-subtle': _c('blue', 50),
+  'color-on-info': _c('neutral', 0),
+  // Text-on-light variants — AAA (>= 7:1) for small colored text and links on
+  // canvas/surface/subtle. The fills above stay vivid (AA; AAA for large/bold
+  // labels). Use these for body-size colored text. See docs/accessibility.md.
+  'color-primary-text': _c('brand', 700),
+  'color-accent-text': _c('fuji', 800),
+  'color-danger-text': _c('red', 700),
+  'color-warning-text': _c('amber', 800),
+  'color-success-text': _c('green', 700),
+  'color-info-text': _c('blue', 700),
+  'color-focus-ring': _c('brand', 400)
+);
+$dark: (
+  'color-bg-canvas': _c('neutral', 950),
+  'color-bg-surface': _c('neutral', 900),
+  'color-bg-subtle': _c('neutral', 800),
+  'color-bg-muted': _c('neutral', 700),
+  'color-bg-inverse': _c('neutral', 50),
+  'color-fg-default': _c('neutral', 50),
+  'color-fg-muted': _c('neutral', 300),
+  'color-fg-subtle': _c('neutral', 400),
+  'color-fg-on-emphasis': _c('neutral', 0),
+  'color-fg-inverse': _c('neutral', 900),
+  'color-border-default': _c('neutral', 700),
+  'color-border-strong': _c('neutral', 600),
+  'color-border-focus': _c('brand', 400),
+  // AAA: near-black text on the primary fill needs >= 7:1, so the resting fill
+  // is the lighter 300 step (8.7:1). Hover/active lighten further.
+  'color-primary': _c('brand', 300),
+  'color-primary-hover': _c('brand', 200),
+  'color-primary-active': _c('brand', 100),
+  'color-primary-subtle': _c('brand', 900),
+  'color-on-primary': _c('neutral', 950),
+  // Accent (藤 fuji) — brightened for dark surfaces.
+  'color-accent': _c('fuji', 300),
+  'color-accent-hover': _c('fuji', 200),
+  'color-accent-active': _c('fuji', 100),
+  'color-accent-subtle': _c('fuji', 700),
+  'color-on-accent': _c('neutral', 950),
+  'color-primary-gradient': linear-gradient(135deg, _c('brand', 300), _c('brand', 500)),
+  'color-accent-gradient': linear-gradient(135deg, _c('fuji', 300), _c('sakura', 300)),
+  'color-danger': _c('red', 200),
+  'color-danger-hover': _c('red', 100),
+  'color-danger-subtle': _c('red', 700),
+  'color-on-danger': _c('neutral', 950),
+  'color-warning': _c('amber', 300),
+  'color-warning-hover': _c('amber', 100),
+  // amber is more luminous than the other hues at the same step, so its subtle
+  // surface needs one step darker (800) to clear 7:1 with light text (AAA 1.4.6).
+  'color-warning-subtle': _c('amber', 800),
+  'color-on-warning': _c('neutral', 950),
+  'color-success': _c('green', 300),
+  'color-success-hover': _c('green', 100),
+  'color-success-subtle': _c('green', 700),
+  'color-on-success': _c('neutral', 950),
+  'color-info': _c('blue', 300),
+  'color-info-hover': _c('blue', 100),
+  'color-info-subtle': _c('blue', 700),
+  'color-on-info': _c('neutral', 950),
+  // Text-on-dark variants — AAA on dark surfaces.
+  'color-primary-text': _c('brand', 300),
+  'color-accent-text': _c('fuji', 300),
+  'color-danger-text': _c('red', 200),
+  'color-warning-text': _c('amber', 300),
+  'color-success-text': _c('green', 300),
+  'color-info-text': _c('blue', 300),
+  'color-focus-ring': _c('brand', 300)
+);

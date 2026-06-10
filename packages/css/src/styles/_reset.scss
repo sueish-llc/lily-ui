@@ -1,0 +1,124 @@
+@use 'abstracts/functions' as fn;
+
+// =============================================================================
+// Reset / base — a modern, accessible baseline.
+// =============================================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+
+  // Honor user font-size preferences; never hard-set px on root.
+  font-size: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: fn.var-ref('font-sans');
+  font-size: fn.var-ref('text-md');
+  font-weight: fn.var-ref('weight-regular');
+
+  // Japanese-first defaults: more generous leading than Latin text, plus a
+  // touch of tracking. Punctuation/kana spacing is handled by the font
+  // features below rather than manual kerning.
+  line-height: fn.var-ref('leading-relaxed');
+  letter-spacing: fn.var-ref('tracking-ja');
+  color: fn.var-ref('color-fg-default');
+  background-color: fn.var-ref('color-bg-canvas');
+
+  // `palt` tightens fullwidth punctuation/kana to natural widths.
+  font-feature-settings: 'palt' 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: fn.var-ref('color-primary');
+  text-decoration-thickness: fn.var-ref('border-thin');
+}
+
+// Japanese line breaking: `strict`禁則 prevents punctuation from starting a
+// line; `overflow-wrap: anywhere` keeps long unbroken strings (URLs, English
+// words) from overflowing on narrow screens.
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dd,
+dt,
+figcaption {
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+
+// Headings: balance line lengths so titles wrap into even, readable blocks.
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+  line-height: fn.var-ref('leading-snug');
+}
+
+// Body copy: `pretty` avoids orphans/ragged endings; `auto-phrase` breaks
+// Japanese at natural phrase (文節) boundaries where the browser supports it.
+p,
+li,
+dd {
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+
+:where(:focus-visible) {
+  outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+  outline-offset: fn.var-ref('border-thick');
+}
+
+// Honor reduced-motion globally as a safety net.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

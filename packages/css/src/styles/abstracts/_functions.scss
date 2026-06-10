@@ -1,0 +1,33 @@
+@use 'sass:math';
+@use 'sass:map';
+@use 'config' as cfg;
+
+// =============================================================================
+// Pure helper functions
+// =============================================================================
+
+/// Convert a pixel value to rem using the configured root font size.
+/// Keeps the codebase free of inline `/ 16` magic divisions.
+@function rem($px) {
+  @return math.div($px, cfg.$root-font-size) * 1rem;
+}
+
+/// Read a value from a token map, failing loudly on typos instead of emitting
+/// silently-broken CSS.
+@function token($map, $key) {
+  @if not map.has-key($map, $key) {
+    @error 'Unknown token "#{$key}". Available: #{map.keys($map)}.';
+  }
+
+  @return map.get($map, $key);
+}
+
+/// Reference an emitted CSS custom property by its semantic name.
+/// Usage: `color: var-ref('color-fg-default');`
+@function var-ref($name, $fallback: null) {
+  @if $fallback != null {
+    @return var(#{cfg.css-var-name($name)}, #{$fallback});
+  }
+
+  @return var(#{cfg.css-var-name($name)});
+}

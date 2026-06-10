@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    // Resolve the sibling Lily packages from source so the cross-framework
+    // stories typecheck without first building the packages' `dist/` (the CI
+    // typecheck job doesn't build). `vue-tsc` (see package.json) understands the
+    // `.vue` files this pulls in.
+    "paths": {
+      "@lily-ui/react": ["../../packages/react/src/index.ts"],
+      "@lily-ui/vue": ["../../packages/vue/src/index.ts"],
+      "@lily-ui/web-components": ["../../packages/web-components/src/index.ts"]
+    }
+  },
+  "include": [
+    "temporal-global.d.ts",
+    ".storybook",
+    "src/**/*.tsx",
+    "stories/**/*.stories.tsx",
+    "../../packages/*/src/**/*.stories.tsx"
+  ]
+}

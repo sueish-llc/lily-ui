@@ -1,0 +1,65 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Navbar — responsive top navigation bar.
+// =============================================================================
+
+$root: '.#{cfg.class-name(navbar)}';
+
+#{$root} {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-4');
+  align-items: center;
+  padding: fn.var-ref('space-3') fn.var-ref('space-4');
+  color: fn.var-ref('color-fg-default');
+  background-color: fn.var-ref('color-bg-surface');
+  border-bottom: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+
+  &__brand {
+    margin-right: auto;
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-extrabold');
+    color: fn.var-ref('color-fg-default');
+    text-decoration: none;
+  }
+
+  &__toggle {
+    display: none;
+    padding: fn.var-ref('space-2');
+    cursor: pointer;
+    background: transparent;
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+
+    @include mx.focus-ring;
+  }
+
+  &__collapse {
+    display: flex;
+    flex-grow: 1;
+    gap: fn.var-ref('space-4');
+    align-items: center;
+  }
+
+  // Collapse to a toggle on small screens.
+  @media (width < 768px) {
+    &__toggle {
+      display: inline-flex;
+    }
+
+    // Hidden by default on mobile; the --open modifier reveals it.
+    &__collapse {
+      display: none;
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+
+      &--open {
+        display: flex;
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "@lily-ui/css",
+  "version": "0.1.0",
+  "description": "Lily UI — the framework-agnostic CSS design library: design tokens, themes (light/dark/custom), utility classes, and component styles. Usable on its own or with @lily-ui/react.",
+  "license": "MIT",
+  "homepage": "https://github.com/sueish-llc/lily-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sueish-llc/lily-ui.git",
+    "directory": "packages/css"
+  },
+  "bugs": "https://github.com/sueish-llc/lily-ui/issues",
+  "type": "module",
+  "sideEffects": true,
+  "exports": {
+    "./styles": "./dist/lily-ui.css",
+    "./styles/fonts": "./dist/fonts.css",
+    "./scss": "./src/styles/index.scss",
+    "./scss/*": "./src/styles/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src/styles"
+  ],
+  "scripts": {
+    "build": "pnpm run build:main && pnpm run build:fonts",
+    "build:main": "sass src/styles/index.scss dist/lily-ui.css --style=compressed --no-source-map --load-path=node_modules",
+    "build:fonts": "sass src/styles/fonts.scss dist/fonts.css --style=compressed --no-source-map",
+    "dev": "sass --watch src/styles/index.scss dist/lily-ui.css",
+    "typecheck": "echo \"@lily-ui/css has no TypeScript\" && exit 0",
+    "test": "echo \"@lily-ui/css: styles validated via stylelint and Storybook a11y\" && exit 0"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  },
+  "keywords": [
+    "css",
+    "design-system",
+    "design-tokens",
+    "scss",
+    "utility-classes",
+    "dark-mode",
+    "accessibility",
+    "wcag"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

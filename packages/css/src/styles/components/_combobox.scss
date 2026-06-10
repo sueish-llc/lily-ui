@@ -1,0 +1,77 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Combobox — a text field with a filtered listbox popup (WAI-ARIA combobox).
+// The text field reuses `.lily-input`; this adds the popup + option styling.
+// =============================================================================
+
+$root: '.#{cfg.class-name(combobox)}';
+
+#{$root} {
+  position: relative;
+
+  &__listbox {
+    position: absolute;
+    z-index: fn.var-ref('z-dropdown');
+    inline-size: 100%;
+    max-block-size: fn.var-ref('size-sm');
+    margin-block-start: fn.var-ref('space-1');
+    padding: fn.var-ref('space-1');
+    overflow-y: auto;
+    list-style: none;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+    box-shadow: fn.var-ref('shadow-lg');
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__option {
+    display: block;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    border-radius: fn.var-ref('radius-sm');
+
+    // Active descendant (keyboard) and hover share the highlight.
+    &--active,
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &[aria-selected='true'] {
+      font-weight: fn.var-ref('weight-medium');
+      color: fn.var-ref('color-primary-text');
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      pointer-events: none;
+    }
+  }
+
+  &__empty {
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-muted');
+  }
+}
+
+// TimePicker & DateRangePicker — simple inline layouts that compose existing
+// Select / DatePicker controls.
+#{'.#{cfg.class-name(time-picker)}'},
+#{'.#{cfg.class-name(date-range-picker)}'} {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-2');
+  align-items: center;
+
+  &__sep {
+    color: fn.var-ref('color-fg-muted');
+  }
+}

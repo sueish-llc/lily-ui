@@ -1,0 +1,52 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Pagination — page navigation control.
+// =============================================================================
+
+$root: '.#{cfg.class-name(pagination)}';
+
+#{$root} {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-1');
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: fn.var-ref('control-h-md');
+    height: fn.var-ref('control-h-md');
+    padding-inline: fn.var-ref('space-3');
+    color: fn.var-ref('color-primary');
+    text-decoration: none;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-md');
+
+    @include mx.focus-ring;
+
+    &:hover:not([aria-disabled='true']) {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+  }
+
+  &__item[aria-current='page'] &__link {
+    color: fn.var-ref('color-on-primary');
+    background-color: fn.var-ref('color-primary');
+    border-color: fn.var-ref('color-primary');
+  }
+
+  &__link[aria-disabled='true'] {
+    color: fn.var-ref('color-fg-subtle');
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}

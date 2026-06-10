@@ -1,0 +1,61 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Skeleton — shimmering placeholders for loading content (text / circle / rect).
+// Decorative (aria-hidden); the live region announcing "loading" is the
+// consumer's responsibility. Animation is disabled under reduced-motion.
+// =============================================================================
+
+$root: '.#{cfg.class-name(skeleton)}';
+
+@keyframes lily-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+#{$root} {
+  display: block;
+  background-color: fn.var-ref('color-bg-subtle');
+  border-radius: fn.var-ref('radius-md');
+
+  &--text {
+    block-size: fn.var-ref('text-md');
+    border-radius: fn.var-ref('radius-sm');
+  }
+
+  &--circle {
+    border-radius: fn.var-ref('radius-circle');
+  }
+
+  &--rect {
+    border-radius: fn.var-ref('radius-md');
+  }
+
+  // Shimmer sweep using a moving gradient over the subtle base.
+  &--animated {
+    background-image: linear-gradient(
+      90deg,
+      fn.var-ref('color-bg-subtle') 0%,
+      fn.var-ref('color-bg-muted') 50%,
+      fn.var-ref('color-bg-subtle') 100%
+    );
+    background-size: 200% 100%;
+    animation: lily-skeleton-shimmer 1.4s ease-in-out infinite;
+
+    @include mx.respect-reduced-motion {
+      animation: none;
+    }
+  }
+
+  // Stacked text lines.
+  &--text + &--text {
+    margin-block-start: fn.var-ref('space-2');
+  }
+}

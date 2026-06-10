@@ -1,0 +1,77 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// FileUpload — a drag-and-drop dropzone plus a selected-file list. The dropzone
+// is a real <button>/<label> for the hidden file input, so it is fully keyboard
+// operable; the dashed border + tokens keep the soft 彩 look.
+// =============================================================================
+
+$root: '.#{cfg.class-name(file-upload)}';
+
+#{$root} {
+  display: block;
+
+  &__dropzone {
+    display: flex;
+    flex-direction: column;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: fn.var-ref('space-6');
+    color: fn.var-ref('color-fg-muted');
+    text-align: center;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-subtle');
+    border: fn.var-ref('border-thick') dashed fn.var-ref('color-border-strong');
+    border-radius: fn.var-ref('radius-lg');
+    transition: color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:hover,
+    &--dragging {
+      color: fn.var-ref('color-fg-default');
+      background-color: fn.var-ref('color-primary-subtle');
+      border-color: fn.var-ref('color-primary');
+    }
+
+    @include mx.focus-ring;
+  }
+
+  &__hint {
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__input {
+    @include mx.visually-hidden;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: fn.var-ref('space-2');
+    padding: 0;
+    margin-block: fn.var-ref('space-3') 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    gap: fn.var-ref('space-3');
+    align-items: center;
+    justify-content: space-between;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-default');
+    background-color: fn.var-ref('color-bg-subtle');
+    border-radius: fn.var-ref('radius-md');
+  }
+
+  &__size {
+    color: fn.var-ref('color-fg-subtle');
+  }
+}

@@ -1,0 +1,43 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Breadcrumb — navigation showing the current page's hierarchy.
+// =============================================================================
+
+$root: '.#{cfg.class-name(breadcrumb)}';
+
+#{$root} {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-2');
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    color: fn.var-ref('color-fg-muted');
+
+    // Separator before every item except the first.
+    & + &::before {
+      color: fn.var-ref('color-fg-subtle');
+      content: var(--#{cfg.$prefix}-breadcrumb-divider, '/');
+    }
+
+    &[aria-current] {
+      color: fn.var-ref('color-fg-default');
+    }
+  }
+
+  &__link {
+    color: fn.var-ref('color-primary');
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

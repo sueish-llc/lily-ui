@@ -1,0 +1,25 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Footer — the page's contentinfo landmark (counterpart to the Navbar).
+// =============================================================================
+
+$root: '.#{cfg.class-name(footer)}';
+
+#{$root} {
+  color: fn.var-ref('color-fg-muted');
+
+  &--bordered {
+    border-block-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: fn.var-ref('space-4');
+    align-items: center;
+    justify-content: space-between;
+    padding: fn.var-ref('space-6') fn.var-ref('space-4');
+  }
+}

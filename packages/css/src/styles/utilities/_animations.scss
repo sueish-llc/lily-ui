@@ -1,0 +1,979 @@
+@use 'sass:list';
+@use 'sass:map';
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Animation utilities — the "animate.css for Lily" layer.
+// -----------------------------------------------------------------------------
+// A large catalog of ready-to-use motion, applied with a base class plus a
+// name modifier (animate.css's two-class model), e.g.:
+//
+//   <div class="lily-animate lily-animate--fade-in-up lily-animate--slow">…</div>
+//
+// What makes it Lily and not just a clone:
+//   • Token-driven   — duration/delay/iteration/easing come from token maps;
+//                      control modifiers only override CSS custom properties.
+//   • Tier-aware     — a `data-motion` attribute (full | minimal | none) lets an
+//                      app seamlessly trade silky motion for the bare minimum on
+//                      low-end devices, independent of the a11y axis below.
+//   • Accessible     — `animation-fill-mode: both` means entrances settle on
+//                      their visible end state, so under the global
+//                      `prefers-reduced-motion` reset (which clamps duration to
+//                      ~0ms) elements still end up correct, never stuck hidden.
+//   • Compositor-only — keyframes animate transform/opacity (and a little skew/
+//                      perspective), which the GPU composites cheaply.
+// =============================================================================
+
+$_animate: cfg.class-name('animate');
+
+// Start offset (entrances) and end offset (exits) per travel direction, as unit
+// sign vectors (x, y). "up" enters from below / exits upward, etc.
+$_enter-from: (
+  up: (0, 1),
+  down: (0, -1),
+  left: (-1, 0),
+  right: (1, 0),
+);
+$_exit-to: (
+  up: (0, -1),
+  down: (0, 1),
+  left: (-1, 0),
+  right: (1, 0),
+);
+
+// Catalog, grouped so the modifier generator, the tier degradation, and any
+// consumer tooling can all share one source of truth.
+$animations-attention: bounce, flash, pulse, rubber-band, shake-x, shake-y,
+  head-shake, swing, tada, wobble, jello, heart-beat;
+$animations-entrances: fade-in, fade-in-up, fade-in-down, fade-in-left,
+  fade-in-right, fade-in-up-big, fade-in-down-big, fade-in-left-big,
+  fade-in-right-big, zoom-in, zoom-in-up, zoom-in-down, zoom-in-left,
+  zoom-in-right, slide-in-up, slide-in-down, slide-in-left, slide-in-right,
+  bounce-in, bounce-in-up, bounce-in-down, bounce-in-left, bounce-in-right,
+  flip-in-x, flip-in-y, back-in-up, back-in-down, back-in-left, back-in-right,
+  roll-in, light-speed-in-left, light-speed-in-right, jack-in-the-box;
+$animations-exits: fade-out, fade-out-up, fade-out-down, fade-out-left,
+  fade-out-right, fade-out-up-big, fade-out-down-big, fade-out-left-big,
+  fade-out-right-big, zoom-out, zoom-out-up, zoom-out-down, zoom-out-left,
+  zoom-out-right, slide-out-up, slide-out-down, slide-out-left, slide-out-right,
+  bounce-out, bounce-out-up, bounce-out-down, bounce-out-left, bounce-out-right,
+  flip-out-x, flip-out-y, back-out-up, back-out-down, back-out-left,
+  back-out-right, roll-out, light-speed-out-left, light-speed-out-right, hinge;
+$animations: list.join(
+  list.join($animations-attention, $animations-entrances),
+  $animations-exits
+);
+
+// =============================================================================
+// 1. Base class — owns timing via custom properties; modifiers override them.
+// =============================================================================
+.#{$_animate} {
+  animation-duration: var(--lily-animate-duration, #{fn.token(p.$animate-duration, base)});
+  animation-delay: var(--lily-animate-delay, 0s);
+  animation-iteration-count: var(--lily-animate-repeat, 1);
+  animation-timing-function: var(--lily-animate-ease, #{fn.var-ref('ease-standard')});
+  animation-fill-mode: both;
+}
+
+// =============================================================================
+// 2. Keyframes.
+// -----------------------------------------------------------------------------
+// 2a. Directional families, generated from the offset maps. Motion distances
+//     here are intrinsic to the animation's shape (not design tokens), so they
+//     live as literals with a clear comment.
+// =============================================================================
+$_dist: 1.5rem; // gentle nudge for the non-"big" directional fades
+$_dist-big: 2000px; // dramatic off-screen distance for the "big" variants
+
+@each $dir, $ef in $_enter-from {
+  $ex: list.nth($ef, 1);
+  $ey: list.nth($ef, 2);
+  $et: map.get($_exit-to, $dir);
+  $tx: list.nth($et, 1);
+  $ty: list.nth($et, 2);
+
+  // --- fade (in/out, regular + big) -----------------------------------------
+  @keyframes lily-fade-in-#{$dir} {
+    from {
+      opacity: 0;
+      transform: translate3d(#{$ex * 1.5}rem, #{$ey * 1.5}rem, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes lily-fade-in-#{$dir}-big {
+    from {
+      opacity: 0;
+      transform: translate3d(#{$ex * 2000}px, #{$ey * 2000}px, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes lily-fade-out-#{$dir} {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(#{$tx * 1.5}rem, #{$ty * 1.5}rem, 0);
+    }
+  }
+
+  @keyframes lily-fade-out-#{$dir}-big {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(#{$tx * 2000}px, #{$ty * 2000}px, 0);
+    }
+  }
+
+  // --- zoom (directional) ----------------------------------------------------
+  @keyframes lily-zoom-in-#{$dir} {
+    from {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3) translate3d(#{$ex * 1000}px, #{$ey * 1000}px, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes lily-zoom-out-#{$dir} {
+    from {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3) translate3d(#{$tx * 1000}px, #{$ty * 1000}px, 0);
+    }
+  }
+
+  // --- slide (solid, full-size translate) -----------------------------------
+  // NB: multiply by `100%` (not `* 100` + a literal `%`) — the latter serialises
+  // as `0 %`, an invalid value that disables the whole transform.
+  @keyframes lily-slide-in-#{$dir} {
+    from {
+      transform: translate3d(#{$ex * 100%}, #{$ey * 100%}, 0);
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes lily-slide-out-#{$dir} {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(#{$tx * 100%}, #{$ty * 100%}, 0);
+    }
+  }
+
+  // --- back (overshoot scale + travel) --------------------------------------
+  @keyframes lily-back-in-#{$dir} {
+    0% {
+      opacity: 0.7;
+      transform: translate3d(#{$ex * 1200}px, #{$ey * 1200}px, 0) scale(0.7);
+    }
+
+    80% {
+      opacity: 0.7;
+      transform: translate3d(0, 0, 0) scale(0.7);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes lily-back-out-#{$dir} {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    20% {
+      opacity: 0.7;
+      transform: translate3d(0, 0, 0) scale(0.7);
+    }
+
+    100% {
+      opacity: 0.7;
+      transform: translate3d(#{$tx * 1200}px, #{$ty * 1200}px, 0) scale(0.7);
+    }
+  }
+
+  // --- bounce (directional, with overshoot) ---------------------------------
+  @keyframes lily-bounce-in-#{$dir} {
+    0% {
+      opacity: 0;
+      transform: translate3d(#{$ex * 1200}px, #{$ey * 1200}px, 0);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    60% {
+      opacity: 1;
+      transform: translate3d(#{$ex * -20}px, #{$ey * -20}px, 0);
+    }
+
+    75% {
+      transform: translate3d(#{$ex * 10}px, #{$ey * 10}px, 0);
+    }
+
+    90% {
+      transform: translate3d(#{$ex * -5}px, #{$ey * -5}px, 0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes lily-bounce-out-#{$dir} {
+    0% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    20% {
+      transform: translate3d(#{$tx * 10}px, #{$ty * 10}px, 0);
+    }
+
+    40%, 45% {
+      opacity: 1;
+      transform: translate3d(#{$tx * -20}px, #{$ty * -20}px, 0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate3d(#{$tx * 2000}px, #{$ty * 2000}px, 0);
+    }
+  }
+}
+
+// 2b. Hand-authored, non-directional keyframes.
+// --- plain fade / zoom -------------------------------------------------------
+@keyframes lily-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lily-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+// Soft fade with a small rise — the entrance used by the `minimal` tier. A plain
+// opacity fade is easy to miss on an element that is already in place, so a
+// short, cheap (transform-only) lift makes the motion legible.
+@keyframes lily-fade-in-soft {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lily-zoom-in {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes lily-zoom-out {
+  0% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+// --- attention seekers -------------------------------------------------------
+@keyframes lily-bounce {
+  0%, 20%, 53%, 100% {
+    transform: translate3d(0, 0, 0);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  40%, 43% {
+    transform: translate3d(0, -30px, 0) scaleY(1.1);
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  }
+
+  70% {
+    transform: translate3d(0, -15px, 0) scaleY(1.05);
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  }
+
+  80% {
+    transform: translate3d(0, 0, 0) scaleY(0.95);
+  }
+
+  90% {
+    transform: translate3d(0, -4px, 0) scaleY(1.02);
+  }
+}
+
+@keyframes lily-flash {
+  0%, 50%, 100% { opacity: 1;
+  }
+
+ 25%, 75% { opacity: 0;
+  };
+}
+
+@keyframes lily-pulse {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes lily-rubber-band {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    transform: scale3d(1.25, 0.75, 1);
+  }
+
+  40% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  50% {
+    transform: scale3d(1.15, 0.85, 1);
+  }
+
+  65% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  75% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes lily-shake-x {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  20%, 40%, 60%, 80% {
+    transform: translate3d(10px, 0, 0);
+  }
+}
+
+@keyframes lily-shake-y {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate3d(0, -10px, 0);
+  }
+
+  20%, 40%, 60%, 80% {
+    transform: translate3d(0, 10px, 0);
+  }
+}
+
+@keyframes lily-head-shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  6.5% {
+    transform: translateX(-6px) rotateY(-9deg);
+  }
+
+  18.5% {
+    transform: translateX(5px) rotateY(7deg);
+  }
+
+  31.5% {
+    transform: translateX(-3px) rotateY(-5deg);
+  }
+
+  43.5% {
+    transform: translateX(2px) rotateY(3deg);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes lily-swing {
+  20% {
+    transform: rotate3d(0, 0, 1, 15deg);
+  }
+
+  40% {
+    transform: rotate3d(0, 0, 1, -10deg);
+  }
+
+  60% {
+    transform: rotate3d(0, 0, 1, 5deg);
+  }
+
+  80% {
+    transform: rotate3d(0, 0, 1, -5deg);
+  }
+
+  100% {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+
+@keyframes lily-tada {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  10%, 20% {
+    transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+  }
+
+  30%, 50%, 70%, 90% {
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+  }
+
+  40%, 60%, 80% {
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes lily-wobble {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  15% {
+    transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+  }
+
+  30% {
+    transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+  }
+
+  45% {
+    transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+  }
+
+  60% {
+    transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+  }
+
+  75% {
+    transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lily-jello {
+  0%, 11.1%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  22.2% {
+    transform: skewX(-12.5deg) skewY(-12.5deg);
+  }
+
+  33.3% {
+    transform: skewX(6.25deg) skewY(6.25deg);
+  }
+
+  44.4% {
+    transform: skewX(-3.125deg) skewY(-3.125deg);
+  }
+
+  55.5% {
+    transform: skewX(1.5625deg) skewY(1.5625deg);
+  }
+
+  66.6% {
+    transform: skewX(-0.7813deg) skewY(-0.7813deg);
+  }
+
+  77.7% {
+    transform: skewX(0.3906deg) skewY(0.3906deg);
+  }
+
+  88.8% {
+    transform: skewX(-0.1953deg) skewY(-0.1953deg);
+  }
+}
+
+@keyframes lily-heart-beat {
+  0% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.3);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.3);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+}
+
+// --- centered bounce-in ------------------------------------------------------
+@keyframes lily-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes lily-bounce-out {
+  20% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  50%, 55% {
+    opacity: 1;
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+}
+
+// --- flips -------------------------------------------------------------------
+@keyframes lily-flip-in-x {
+  0% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    opacity: 0;
+    animation-timing-function: ease-in;
+  }
+
+  40% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+  }
+
+  100% {
+    transform: perspective(400px);
+    opacity: 1;
+  }
+}
+
+@keyframes lily-flip-in-y {
+  0% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+    animation-timing-function: ease-in;
+  }
+
+  40% {
+    transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+  }
+
+  100% {
+    transform: perspective(400px);
+    opacity: 1;
+  }
+}
+
+@keyframes lily-flip-out-x {
+  0% {
+    transform: perspective(400px);
+  }
+
+  30% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes lily-flip-out-y {
+  0% {
+    transform: perspective(400px);
+  }
+
+  30% {
+    transform: perspective(400px) rotate3d(0, 1, 0, -15deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+  }
+}
+
+// --- rolls -------------------------------------------------------------------
+@keyframes lily-roll-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lily-roll-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg);
+  }
+}
+
+// --- light speed -------------------------------------------------------------
+@keyframes lily-light-speed-in-right {
+  0% {
+    transform: translate3d(100%, 0, 0) skewX(-30deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: skewX(20deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: skewX(-5deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lily-light-speed-in-left {
+  0% {
+    transform: translate3d(-100%, 0, 0) skewX(30deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: skewX(-20deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: skewX(5deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lily-light-speed-out-right {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(100%, 0, 0) skewX(30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes lily-light-speed-out-left {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(-100%, 0, 0) skewX(-30deg);
+    opacity: 0;
+  }
+}
+
+// --- specials ----------------------------------------------------------------
+@keyframes lily-jack-in-the-box {
+  0% {
+    opacity: 0;
+    transform: scale(0.1) rotate(30deg);
+  }
+
+  50% {
+    transform: rotate(-10deg);
+  }
+
+  70% {
+    transform: rotate(3deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes lily-hinge {
+  0% {
+    animation-timing-function: ease-in-out;
+  }
+
+  20%, 60% {
+    transform: rotate3d(0, 0, 1, 80deg);
+    animation-timing-function: ease-in-out;
+  }
+
+  40%, 80% {
+    transform: rotate3d(0, 0, 1, 60deg);
+    animation-timing-function: ease-in-out;
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(0, 700px, 0);
+    opacity: 0;
+  }
+}
+
+// =============================================================================
+// 3. Name modifiers — one per catalog entry.
+// =============================================================================
+@each $name in $animations {
+  .#{$_animate}--#{$name} {
+    animation-name: lily-#{$name};
+  }
+}
+
+// Transform-origin / backface tweaks a few names need to look right.
+.#{$_animate}--swing {
+  transform-origin: top center;
+}
+.#{$_animate}--jack-in-the-box {
+  transform-origin: center bottom;
+}
+.#{$_animate}--hinge {
+  transform-origin: top left;
+}
+.#{$_animate}--flip-in-x,
+.#{$_animate}--flip-in-y,
+.#{$_animate}--flip-out-x,
+.#{$_animate}--flip-out-y {
+  backface-visibility: visible;
+}
+
+// =============================================================================
+// 4. Control modifiers — override the base custom properties (token-driven).
+// =============================================================================
+@each $key, $value in p.$animate-duration {
+  .#{$_animate}--#{$key} {
+    --lily-animate-duration: #{$value};
+  }
+}
+
+@each $key, $value in p.$animate-delay {
+  .#{$_animate}--delay-#{$key} {
+    --lily-animate-delay: #{$value};
+  }
+}
+.#{$_animate}--infinite {
+  --lily-animate-repeat: infinite;
+}
+.#{$_animate}--repeat-2 {
+  --lily-animate-repeat: 2;
+}
+.#{$_animate}--repeat-3 {
+  --lily-animate-repeat: 3;
+}
+.#{$_animate}--ease-emphasized {
+  --lily-animate-ease: #{fn.var-ref('ease-emphasized')};
+}
+.#{$_animate}--ease-accelerate {
+  --lily-animate-ease: #{fn.var-ref('ease-accelerate')};
+}
+
+// Snappy UI timing — bridges the decorative scale down to the interaction
+// duration so overlays (modal/popover/toast) enter/exit quickly. Used by the
+// component integrations rather than the showcase utilities.
+.#{$_animate}--snappy {
+  --lily-animate-duration: #{fn.var-ref('duration-base')};
+}
+
+// =============================================================================
+// 5. Motion tiers — seamless "silky ⇄ bare-minimum" switching via [data-motion].
+// -----------------------------------------------------------------------------
+// This is the performance axis, independent of `prefers-reduced-motion` (which
+// the global reset already enforces for the a11y axis). Flipping the attribute
+// on <html> re-styles instantly — no reload, no JS re-render of components.
+//   • minimal — entrances collapse to a quick fade-in, exits to fade-out, and
+//               attention seekers to a single gentle pulse, all shortened. Still
+//               gives feedback, just cheaply — for phones / low-end machines.
+//   • none    — no animation at all.
+// =============================================================================
+$_minimal: '[#{cfg.$motion-attribute}=\'minimal\']';
+$_none: '[#{cfg.$motion-attribute}=\'none\']';
+
+// Use the interaction duration (200ms), not `fast` (120ms): a quick fade still
+// needs to be perceptible to read as motion rather than a flicker.
+#{$_minimal} .#{$_animate} {
+  animation-duration: #{fn.var-ref('duration-base')};
+  animation-iteration-count: 1;
+}
+
+@each $name in $animations-entrances {
+  #{$_minimal} .#{$_animate}--#{$name} {
+    animation-name: lily-fade-in-soft;
+  }
+}
+
+@each $name in $animations-exits {
+  #{$_minimal} .#{$_animate}--#{$name} {
+    animation-name: lily-fade-out;
+  }
+}
+
+// Attention seekers keep a single cheap pulse so they still signal something
+// (the heavier shakes/bounces are what we trade away on low-end devices).
+@each $name in $animations-attention {
+  #{$_minimal} .#{$_animate}--#{$name} {
+    animation-name: lily-pulse;
+  }
+}
+
+#{$_none} .#{$_animate} {
+  animation: none !important;
+}

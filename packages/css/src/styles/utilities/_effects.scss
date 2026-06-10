@@ -1,0 +1,458 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../tokens/primitives' as p;
+
+// =============================================================================
+// Effect utilities — the "decorative effects" layer (ReactBits-inspired).
+// -----------------------------------------------------------------------------
+// Where `.lily-animate` plays a one-shot entrance/exit, `.lily-fx` adds the
+// *standing* decoration you see on landing pages: shimmering text, glowing
+// borders, drifting aurora backgrounds, a lift on hover. Applied the same way —
+// a base class plus a name modifier:
+//
+//   <h1 class="lily-fx lily-fx--gradient-text">彩</h1>
+//   <article class="lily-fx lily-fx--lift lily-fx--glow">…</article>
+//
+// What keeps it Lily and not just copied snippets:
+//   • Token-driven   — colors come from semantic tokens, and one knob
+//                      (`--lily-fx-duration`) sets the tempo of every loop, so
+//                      the whole set speeds up / slows down together.
+//   • Tier-aware     — under `data-motion="minimal"` the always-on GPU loops are
+//                      switched off (the expensive part on low-end devices)
+//                      while cheap hover transitions stay; `none` stops it all.
+//   • Accessible     — the global `prefers-reduced-motion` reset already clamps
+//                      these loops to a single ~0ms pass, so each effect's resting
+//                      state stays legible (text keeps its color, nothing is left
+//                      stuck mid-sweep). No infinite motion reaches a user who
+//                      asked for less (AAA 2.2.2 / 2.3.3).
+//   • Compositor-only where it counts — loops animate transform / opacity /
+//                      background-position; no permanent `will-change`.
+//
+// Customization hooks (set inline or in a rule) per effect:
+//   --lily-fx-duration       tempo of every loop (default 4s; see $fx-duration)
+//   --lily-fx-glow-color     glow color           (--lily-fx--glow)
+//   --lily-fx-border-color   running border color  (--lily-fx--star-border)
+//   --lily-fx-border-width   running border width  (--lily-fx--star-border)
+//   --lily-fx-shine-base / --lily-fx-shine-highlight   shine text colors
+//   --lily-fx-glare-color    hover glare color     (--lily-fx--glare)
+// =============================================================================
+
+$_fx: cfg.class-name('fx');
+
+// Catalog, grouped so the modifier docs, the tier degradation, and any consumer
+// tooling share one source of truth.
+$fx-text: gradient-text, shine-text, glitch;
+$fx-hover: lift, grow, glare;
+$fx-ambient: float, glow, shimmer, star-border;
+$fx-background: aurora, gradient-bg;
+
+// Every effect that runs a continuous loop. These are what we trade away on the
+// `minimal` tier and what the reduced-motion reset clamps; hover effects (lift /
+// grow / glare) are cheap and user-initiated, so they survive `minimal`.
+$_fx-loops: gradient-text, shine-text, glitch, float, glow, shimmer, star-border,
+  aurora, gradient-bg;
+
+// =============================================================================
+// 1. Base class — one tempo knob shared by every loop.
+// =============================================================================
+.#{$_fx} {
+  --lily-fx-duration: #{fn.token(p.$fx-duration, base)};
+}
+
+// Tempo modifiers just retune the single knob; every effect follows.
+.#{$_fx}--lively {
+  --lily-fx-duration: #{fn.token(p.$fx-duration, lively)};
+}
+
+.#{$_fx}--calm {
+  --lily-fx-duration: #{fn.token(p.$fx-duration, calm)};
+}
+
+// =============================================================================
+// 2. Text effects.
+// =============================================================================
+
+// gradient-text — the signature wisteria→cherry gradient, flowing across the
+// glyphs. Endpoints are AAA text tokens, so it stays legible (best on display
+// text; for body copy the still frame must clear 4.5:1 against the surface).
+.#{$_fx}--gradient-text {
+  color: transparent;
+  background-image: linear-gradient(
+    100deg,
+    #{fn.var-ref('color-primary-text')},
+    #{fn.var-ref('color-accent-text')},
+    #{fn.var-ref('color-primary-text')}
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: lily-fx-gradient-pan calc(var(--lily-fx-duration) * 0.9) linear
+    infinite;
+}
+
+// shine-text — a bright band sweeps across muted text. Both endpoints are
+// foreground tokens, so the text only ever ranges from muted to default.
+.#{$_fx}--shine-text {
+  color: transparent;
+  background-image: linear-gradient(
+    110deg,
+    var(--lily-fx-shine-base, #{fn.var-ref('color-fg-muted')}) 42%,
+    var(--lily-fx-shine-highlight, #{fn.var-ref('color-fg-default')}) 50%,
+    var(--lily-fx-shine-base, #{fn.var-ref('color-fg-muted')}) 58%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 220% auto;
+  animation: lily-fx-shine calc(var(--lily-fx-duration) * 0.9) linear infinite;
+}
+
+// glitch — a brief RGB split that jitters in place. Decorative only; pair with
+// a real text label (the shift is small enough to stay readable). The glyph
+// fill stays `currentColor` — only the split *shadows* are colored — so the
+// real text keeps the developer's accessible color (no contrast cost).
+.#{$_fx}--glitch {
+  animation: lily-fx-glitch calc(var(--lily-fx-duration) * 0.6)
+    steps(2, jump-none) infinite;
+}
+
+// safe — keep a recoloring text effect within AAA (7:1) for body copy. The
+// expressive `gradient-text` flows between two colored `*-text` tokens, which
+// clears 7:1 on the usual canvas/surface but dips to ~6.7:1 on the lightest dark
+// surface (`bg-subtle`). The safe stops flow between the body text color and the
+// brand text color, which is verified >= 7.06:1 against every standard surface
+// in both themes. (`shine-text` and `glitch` are already body-safe, so `--safe`
+// is simply a no-op on them.)
+.#{$_fx}--safe.#{$_fx}--gradient-text {
+  background-image: linear-gradient(
+    100deg,
+    #{fn.var-ref('color-fg-default')},
+    #{fn.var-ref('color-primary-text')},
+    #{fn.var-ref('color-fg-default')}
+  );
+}
+
+@keyframes lily-fx-gradient-pan {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes lily-fx-shine {
+  from {
+    background-position: 150% center;
+  }
+
+  to {
+    background-position: -150% center;
+  }
+}
+
+@keyframes lily-fx-glitch {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    text-shadow: none;
+  }
+
+  20% {
+    transform: translate3d(-1px, 1px, 0);
+    text-shadow:
+      0.06em 0 #{fn.var-ref('color-danger')},
+      -0.06em 0 #{fn.var-ref('color-info')};
+  }
+
+  40% {
+    transform: translate3d(1px, -1px, 0);
+    text-shadow:
+      -0.06em 0 #{fn.var-ref('color-danger')},
+      0.06em 0 #{fn.var-ref('color-info')};
+  }
+
+  60% {
+    transform: translate3d(-1px, 0, 0);
+    text-shadow:
+      0.06em 0 #{fn.var-ref('color-info')},
+      -0.06em 0 #{fn.var-ref('color-danger')};
+  }
+
+  80% {
+    transform: translate3d(1px, 1px, 0);
+    text-shadow: none;
+  }
+}
+
+// =============================================================================
+// 3. Hover effects — transition-based, so they obey the global reduced-motion
+//    reset and stay on the `minimal` tier (cheap, only run on interaction).
+// =============================================================================
+
+// lift — float up with a deeper shadow.
+.#{$_fx}--lift {
+  transition:
+    transform #{fn.var-ref('duration-base')} #{fn.var-ref('ease-standard')},
+    box-shadow #{fn.var-ref('duration-base')} #{fn.var-ref('ease-standard')};
+}
+
+.#{$_fx}--lift:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: #{fn.var-ref('shadow-lg')};
+}
+
+// grow — a gentle scale up.
+.#{$_fx}--grow {
+  transition: transform #{fn.var-ref('duration-base')} #{fn.var-ref(
+      'ease-standard'
+    )};
+}
+
+.#{$_fx}--grow:hover {
+  transform: scale(1.04);
+}
+
+// glare — a diagonal sheen sweeps across on hover.
+.#{$_fx}--glare {
+  position: relative;
+  overflow: hidden;
+}
+
+.#{$_fx}--glare::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    var(--lily-fx-glare-color, rgb(255 255 255 / 30%)) 50%,
+    transparent 70%
+  );
+  transform: translate3d(-120%, 0, 0);
+  transition: transform #{fn.var-ref('duration-slow')} #{fn.var-ref(
+      'ease-standard'
+    )};
+}
+
+.#{$_fx}--glare:hover::after {
+  transform: translate3d(120%, 0, 0);
+}
+
+// =============================================================================
+// 4. Ambient effects — continuous, opt-in decoration.
+// =============================================================================
+
+// float — drift up and down.
+.#{$_fx}--float {
+  animation: lily-fx-float var(--lily-fx-duration) ease-in-out infinite;
+}
+
+// glow — a soft halo pulses in and out.
+.#{$_fx}--glow {
+  animation: lily-fx-glow calc(var(--lily-fx-duration) * 0.6) ease-in-out
+    infinite;
+}
+
+// shimmer — a light band slides across (great over a loading surface). Needs a
+// clipping host; the band rides a pseudo-element.
+.#{$_fx}--shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.#{$_fx}--shimmer::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--lily-fx-shimmer-color, rgb(255 255 255 / 16%)),
+    transparent
+  );
+  animation: lily-fx-shimmer calc(var(--lily-fx-duration) * 0.4) linear infinite;
+}
+
+// star-border — a running highlight travels around the border. The conic
+// gradient is masked to the padding ring, so only the border lights up.
+.#{$_fx}--star-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.#{$_fx}--star-border::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: var(--lily-fx-border-width, 2px);
+  content: '';
+  background: conic-gradient(
+    from var(--lily-fx-angle),
+    transparent 0%,
+    var(--lily-fx-border-color, #{fn.var-ref('color-accent')}) 18%,
+    transparent 36%
+  );
+  border-radius: inherit;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: lily-fx-spin var(--lily-fx-duration) linear infinite;
+}
+
+@keyframes lily-fx-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -0.5rem, 0);
+  }
+}
+
+@keyframes lily-fx-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+
+  50% {
+    box-shadow: 0 0 1.5rem 0
+      color-mix(
+        in srgb,
+        var(--lily-fx-glow-color, #{fn.var-ref('color-primary')}) 55%,
+        transparent
+      );
+  }
+}
+
+@keyframes lily-fx-shimmer {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+// `--lily-fx-angle` has to be a registered custom property for the conic
+// gradient's `from` angle to be animatable.
+@property --lily-fx-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes lily-fx-spin {
+  to {
+    --lily-fx-angle: 360deg;
+  }
+}
+
+// =============================================================================
+// 5. Background effects — for a section/hero container.
+// =============================================================================
+
+// aurora — soft colored lights drift behind the content. The blobs use the
+// vivid brand/accent/info colors thinned with `color-mix`, not the `*-subtle`
+// tints: subtle sits a hair off the canvas in light mode, so it read as nothing.
+.#{$_fx}--aurora {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #{fn.var-ref('color-bg-canvas')};
+}
+
+.#{$_fx}--aurora::before {
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  content: '';
+  background-image:
+    radial-gradient(
+      40% 40% at 20% 30%,
+      color-mix(in srgb, #{fn.var-ref('color-primary')} 40%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      42% 42% at 80% 20%,
+      color-mix(in srgb, #{fn.var-ref('color-accent')} 40%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      46% 46% at 60% 80%,
+      color-mix(in srgb, #{fn.var-ref('color-info')} 40%, transparent),
+      transparent 60%
+    );
+  filter: blur(40px);
+  animation: lily-fx-drift calc(var(--lily-fx-duration) * 3.5) ease-in-out
+    infinite alternate;
+}
+
+// gradient-bg — the palette slowly pans across the surface, as a soft tint that
+// lets whatever is behind show through.
+.#{$_fx}--gradient-bg {
+  background-image: linear-gradient(
+    120deg,
+    color-mix(in srgb, #{fn.var-ref('color-primary')} 30%, transparent),
+    color-mix(in srgb, #{fn.var-ref('color-accent')} 30%, transparent),
+    color-mix(in srgb, #{fn.var-ref('color-info')} 30%, transparent),
+    color-mix(in srgb, #{fn.var-ref('color-primary')} 30%, transparent)
+  );
+  background-size: 300% 300%;
+  animation: lily-fx-bg-pan calc(var(--lily-fx-duration) * 3.5) ease infinite;
+}
+
+@keyframes lily-fx-drift {
+  from {
+    transform: translate3d(-4%, -2%, 0) rotate(0deg);
+  }
+
+  to {
+    transform: translate3d(4%, 3%, 0) rotate(6deg);
+  }
+}
+
+@keyframes lily-fx-bg-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+// =============================================================================
+// 6. Motion tiers — seamless degradation via [data-motion], matching the
+//    `.lily-animate` layer. The a11y axis (prefers-reduced-motion) is already
+//    handled by the global reset, which clamps these loops to a single ~0ms pass.
+// =============================================================================
+$_minimal: '[#{cfg.$motion-attribute}=\'minimal\']';
+$_none: '[#{cfg.$motion-attribute}=\'none\']';
+
+// minimal — switch off the always-on loops (the costly part on low-end devices);
+// the cheap hover transitions (lift / grow / glare) stay.
+@each $name in $_fx-loops {
+  #{$_minimal} .#{$_fx}--#{$name},
+  #{$_minimal} .#{$_fx}--#{$name}::before,
+  #{$_minimal} .#{$_fx}--#{$name}::after {
+    animation: none;
+  }
+}
+
+// none — nothing moves.
+#{$_none} .#{$_fx},
+#{$_none} .#{$_fx}::before,
+#{$_none} .#{$_fx}::after {
+  animation: none !important;
+  transition-duration: 0.001ms !important;
+}

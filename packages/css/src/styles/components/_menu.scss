@@ -1,0 +1,68 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Menu — a standalone command menu (WAI-ARIA menu). Unlike Dropdown (a toggle),
+// this is just the list, for use in context menus or custom popups. Roving
+// tabindex + arrow keys are handled by the component.
+// =============================================================================
+
+$root: '.#{cfg.class-name(menu)}';
+
+#{$root} {
+  min-inline-size: fn.var-ref('size-xs');
+  padding: fn.var-ref('space-1');
+  margin: 0;
+  list-style: none;
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+  box-shadow: fn.var-ref('shadow-md');
+
+  &__item {
+    display: flex;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    inline-size: 100%;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-default');
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-sm');
+
+    @include mx.focus-ring;
+
+    &:hover,
+    &:focus {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      pointer-events: none;
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__shortcut {
+    margin-inline-start: auto;
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__divider {
+    block-size: fn.var-ref('border-thin');
+    margin: fn.var-ref('space-1') 0;
+    background-color: fn.var-ref('color-border-default');
+    border: 0;
+  }
+}

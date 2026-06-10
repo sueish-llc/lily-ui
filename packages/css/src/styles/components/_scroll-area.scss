@@ -1,0 +1,43 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// ScrollArea — a scroll container with a consistent, slim, themed scrollbar
+// across browsers (Firefox `scrollbar-*` + WebKit pseudo-elements).
+// =============================================================================
+
+$root: '.#{cfg.class-name(scroll-area)}';
+
+#{$root} {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: fn.var-ref('color-border-strong') transparent;
+
+  &--x {
+    overflow: auto hidden;
+  }
+
+  &--y {
+    overflow: hidden auto;
+  }
+
+  &::-webkit-scrollbar {
+    inline-size: fn.var-ref('space-2');
+    block-size: fn.var-ref('space-2');
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: fn.var-ref('color-border-strong');
+    background-clip: padding-box;
+    border: fn.var-ref('border-thick') solid transparent;
+    border-radius: fn.var-ref('radius-pill');
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: fn.var-ref('color-fg-subtle');
+  }
+}

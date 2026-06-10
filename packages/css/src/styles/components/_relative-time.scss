@@ -1,0 +1,16 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// RelativeTime — inline <time> element with human-readable relative text.
+// Minimal by design: the component is inline text and inherits surrounding
+// styles. Only the semantic display type is enforced here.
+// =============================================================================
+
+$root: '.#{cfg.class-name(relative-time)}';
+
+#{$root} {
+  display: inline;
+  color: inherit;
+  font-size: inherit;
+}

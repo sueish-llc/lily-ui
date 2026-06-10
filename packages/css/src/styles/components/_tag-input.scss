@@ -1,0 +1,47 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// TagInput — a field that collects multiple tokens (emails, keywords). Tokens
+// render as Chips; a trailing text input adds new ones. The wrapper looks like
+// a text field and shows the focus ring when the inner input is focused.
+// =============================================================================
+
+$root: '.#{cfg.class-name(tag-input)}';
+
+#{$root} {
+  display: flex;
+  flex-wrap: wrap;
+  gap: fn.var-ref('space-2');
+  align-items: center;
+  min-height: fn.var-ref('control-h-md');
+  padding: fn.var-ref('space-1') fn.var-ref('space-2');
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+
+  &:focus-within {
+    border-color: fn.var-ref('color-border-focus');
+    outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+    outline-offset: calc(-1 * #{fn.var-ref('border-thin')});
+  }
+
+  &__field {
+    flex: 1 1 fn.var-ref('size-xs');
+    min-width: fn.var-ref('size-xs');
+    padding: fn.var-ref('space-1');
+    font-size: fn.var-ref('text-md');
+    color: fn.var-ref('color-fg-default');
+    background: transparent;
+    border: 0;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &--disabled {
+    background-color: fn.var-ref('color-bg-subtle');
+    cursor: not-allowed;
+  }
+}

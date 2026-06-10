@@ -1,0 +1,61 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Divider — a thin rule that separates content. Horizontal by default; can be
+// vertical, or carry a centered label. Rendered as a semantic separator.
+// =============================================================================
+
+$root: '.#{cfg.class-name(divider)}';
+
+#{$root} {
+  display: block;
+  border: 0;
+  border-block-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  margin-block: fn.var-ref('space-4');
+
+  &--strong {
+    border-block-start-color: fn.var-ref('color-border-strong');
+  }
+
+  // Vertical: a self-stretching rule for use inside flex rows.
+  &--vertical {
+    align-self: stretch;
+    inline-size: 0;
+    block-size: auto;
+    min-block-size: fn.var-ref('space-4');
+    border-block-start: 0;
+    border-inline-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    margin-block: 0;
+    margin-inline: fn.var-ref('space-4');
+
+    &#{$root}--strong {
+      border-inline-start-color: fn.var-ref('color-border-strong');
+    }
+  }
+
+  // Labeled: text centered over the rule.
+  &--labeled {
+    display: flex;
+    align-items: center;
+    gap: fn.var-ref('space-3');
+    border-block-start: 0;
+    color: fn.var-ref('color-fg-muted');
+    font-size: fn.var-ref('text-sm');
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1 1 auto;
+      border-block-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    }
+
+    &#{$root}--start::before {
+      flex: 0 0 fn.var-ref('space-6');
+    }
+
+    &#{$root}--end::after {
+      flex: 0 0 fn.var-ref('space-6');
+    }
+  }
+}

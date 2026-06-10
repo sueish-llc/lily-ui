@@ -1,0 +1,121 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Drawer — a panel anchored to an edge. Three variants:
+//   • temporary — overlays content on a backdrop (slide handled by JS anim).
+//   • persistent — sits in the normal flow and collapses open/closed.
+//   • permanent — always visible, in the normal flow.
+// =============================================================================
+
+$root: '.#{cfg.class-name(drawer)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: fn.var-ref('color-bg-surface');
+
+  // Side drawers take a fixed inline size; top/bottom take a block size.
+  // Side size never exceeds the viewport (a sliver stays for the backdrop).
+  &--left,
+  &--right {
+    inline-size: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-12')}));
+    block-size: 100%;
+  }
+
+  &--top,
+  &--bottom {
+    inline-size: 100%;
+    block-size: 30vh;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: fn.var-ref('space-3');
+    padding: fn.var-ref('space-4');
+    border-block-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__title {
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: fn.var-ref('space-4');
+    overflow-y: auto;
+  }
+
+  // ── temporary: fixed overlay panel pinned to its edge ──────────────────────
+  &--temporary {
+    position: fixed;
+    z-index: fn.var-ref('z-offcanvas');
+    box-shadow: fn.var-ref('shadow-xl');
+
+    &#{$root}--left {
+      inset-block: 0;
+      inset-inline-start: 0;
+    }
+    &#{$root}--right {
+      inset-block: 0;
+      inset-inline-end: 0;
+    }
+    &#{$root}--top {
+      inset-inline: 0;
+      inset-block-start: 0;
+    }
+    &#{$root}--bottom {
+      inset-inline: 0;
+      inset-block-end: 0;
+    }
+  }
+
+  // ── permanent + persistent: live in the normal flow, pushing siblings ──────
+  &--permanent,
+  &--persistent {
+    position: relative;
+
+    &#{$root}--left {
+      border-inline-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    }
+    &#{$root}--right {
+      border-inline-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    }
+    &#{$root}--top {
+      border-block-end: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    }
+    &#{$root}--bottom {
+      border-block-start: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    }
+  }
+
+  // ── persistent open/close: animate the collapse ────────────────────────────
+  &--persistent {
+    overflow: hidden;
+    transition:
+      inline-size fn.var-ref('duration-base') fn.var-ref('ease-standard'),
+      block-size fn.var-ref('duration-base') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+
+    &[data-open='false'] {
+      &#{$root}--left,
+      &#{$root}--right {
+        inline-size: 0;
+        border-inline: 0;
+      }
+      &#{$root}--top,
+      &#{$root}--bottom {
+        block-size: 0;
+        border-block: 0;
+      }
+    }
+  }
+}

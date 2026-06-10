@@ -1,0 +1,96 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Stepper — a sequence of steps (wizard / checkout). Markers show number, check
+// (complete), or error; connectors join them. The component sets `aria-current`
+// on the active step and conveys state with text/icon, never color alone.
+// =============================================================================
+
+$root: '.#{cfg.class-name(stepper)}';
+
+#{$root} {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &__step {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: fn.var-ref('space-2');
+    align-items: center;
+    color: fn.var-ref('color-fg-muted');
+
+    &--current {
+      font-weight: fn.var-ref('weight-medium');
+      color: fn.var-ref('color-fg-default');
+    }
+  }
+
+  &__marker {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    inline-size: fn.var-ref('control-h-sm');
+    block-size: fn.var-ref('control-h-sm');
+    font-size: fn.var-ref('text-sm');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-muted');
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+    border-radius: fn.var-ref('radius-circle');
+
+    #{$root}__step--current & {
+      color: fn.var-ref('color-on-primary');
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+    }
+
+    #{$root}__step--complete & {
+      color: fn.var-ref('color-on-success');
+      background-color: fn.var-ref('color-success');
+      border-color: fn.var-ref('color-success');
+    }
+
+    #{$root}__step--error & {
+      color: fn.var-ref('color-on-danger');
+      background-color: fn.var-ref('color-danger');
+      border-color: fn.var-ref('color-danger');
+    }
+  }
+
+  &__label {
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &__description {
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &__connector {
+    flex: 1 1 fn.var-ref('space-8');
+    min-inline-size: fn.var-ref('space-6');
+    block-size: fn.var-ref('border-thin');
+    margin-inline: fn.var-ref('space-2');
+    background-color: fn.var-ref('color-border-default');
+
+    &--vertical {
+      flex: 0 0 fn.var-ref('space-6');
+      inline-size: fn.var-ref('border-thin');
+      min-inline-size: 0;
+      block-size: fn.var-ref('space-6');
+      margin-block: fn.var-ref('space-1');
+      margin-inline: 0;
+      margin-inline-start: calc(0.5 * #{fn.var-ref('control-h-sm')});
+    }
+  }
+}

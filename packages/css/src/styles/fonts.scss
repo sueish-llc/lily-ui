@@ -1,0 +1,47 @@
+// =============================================================================
+// LINE Seed font faces — OPT-IN, compiled to its own stylesheet.
+// -----------------------------------------------------------------------------
+// "LINE Seed" is a font name owned by its respective rights holders, distributed
+// under the SIL Open Font License 1.1.
+//
+// IMPORTANT: This file is built separately to `dist/fonts.css` and is NOT part
+// of the main bundle. The library does not bundle the font files itself; you
+// host them yourself under the font's own license. Instead:
+//
+//   1. Download the fonts from https://seed.line.me/index_jp.html
+//   2. Place the .woff2 files where your app serves static assets.
+//   3. Either import `@lily-ui/css/styles/fonts` and host the files at
+//      `/fonts`, or copy these @font-face rules and point `src` at your files.
+//
+// Consumers who do nothing still get a fully usable UI via the system-font
+// fallback stack defined in tokens/_primitives.scss.
+//
+// `font-display: swap` keeps text visible during font load (avoids invisible
+// text; WCAG-friendly).
+// =============================================================================
+
+$font-path: '/fonts' !default;
+
+@font-face {
+  font-family: 'LINE Seed JP';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('#{$font-path}/LINESeedJP_A_Rg.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'LINE Seed JP';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('#{$font-path}/LINESeedJP_A_Bd.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'LINE Seed JP';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('#{$font-path}/LINESeedJP_A_Eb.woff2') format('woff2');
+}

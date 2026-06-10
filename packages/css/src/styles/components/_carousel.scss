@@ -1,0 +1,86 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Carousel — a slideshow for cycling through items.
+// =============================================================================
+
+$root: '.#{cfg.class-name(carousel)}';
+
+#{$root} {
+  position: relative;
+  overflow: hidden;
+  border-radius: fn.var-ref('radius-md');
+
+  &__viewport {
+    display: flex;
+    transition: transform fn.var-ref('duration-base') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+  }
+
+  &__slide {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  &__control {
+    position: absolute;
+    top: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fn.var-ref('control-h-md');
+    height: fn.var-ref('control-h-md');
+    color: fn.var-ref('color-fg-default');
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+    border-radius: fn.var-ref('radius-circle');
+    transform: translateY(-50%);
+
+    @include mx.focus-ring;
+
+    &--prev {
+      left: fn.var-ref('space-3');
+    }
+
+    &--next {
+      right: fn.var-ref('space-3');
+    }
+  }
+
+  &__indicators {
+    position: absolute;
+    bottom: fn.var-ref('space-3');
+    left: 50%;
+    display: flex;
+    gap: fn.var-ref('space-2');
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    transform: translateX(-50%);
+  }
+
+  &__indicator {
+    width: fn.var-ref('space-2');
+    height: fn.var-ref('space-2');
+    padding: 0;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+    border-radius: fn.var-ref('radius-circle');
+    opacity: 0.6;
+
+    @include mx.focus-ring;
+
+    &[aria-current='true'] {
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+      opacity: 1;
+    }
+  }
+}

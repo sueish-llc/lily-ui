@@ -1,0 +1,323 @@
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Primitive tokens — the raw, theme-agnostic scales.
+// -----------------------------------------------------------------------------
+// These are the lowest layer: literal values with no meaning attached. Nothing
+// in a component references these directly; semantic tokens map onto them.
+// =============================================================================
+
+// --- Color palettes ---------------------------------------------------------
+// Each ramp goes 50 (lightest) -> 900 (darkest). The palette is built from a
+// trio of Japanese spring flowers — 笹百合 (sasayuri, the pink brand lead),
+// 藤 (fuji, the wisteria-violet accent) and 桜 (sakura, the accent's gradient
+// partner). The mid/dark steps are deepened so primary/status surfaces clear
+// WCAG AAA (>= 7:1) with white text. The accent deliberately sits OUTSIDE the
+// warm band: a warm accent plus the warm `warning` would collide once both are
+// darkened for AAA (dark oranges/golds both read brown), so the accent is a
+// cool jewel violet — clearly apart from the brand lead and from every status
+// color (red/amber/green/blue) for color-vision-deficiency safety. Text/
+// background pairings target WCAG 2.1 AAA in both light and dark; see
+// docs/accessibility.md.
+$palette: (
+  'brand': (
+    50: #fdf1f8,
+    100: #fbd9ed,
+    200: #f6b6db,
+    300: #ef88c1,
+    400: #e6549f,
+    500: #d22879,
+    // 笹百合 (sasayuri) — a pink lead pushed toward cerise/magenta (hue ≈ 331°)
+    // so the primary fill reads clearly pink, well separated from the scarlet
+    // `danger` (red, ≈ 6°). Each step's lightness matches the previous ramp so
+    // the WCAG AAA pairings still hold.
+    600: #ad2167,
+    700: #871d5e,
+    800: #631444,
+    900: #42102c,
+  ),
+  // Warm neutrals — a faint warm tint (not pure gray) so the whole UI reads
+  // soft and friendly rather than clinical. This is core to the 彩 (Sai) look.
+  'neutral': (
+    0: #fff,
+    50: #faf9f7,
+    100: #f2f0ec,
+    200: #e6e2db,
+    300: #d3cdc4,
+    400: #a49d92,
+    500: #756e64,
+    600: #534d45,
+    700: #38332d,
+    800: #221e1a,
+    900: #14110e,
+    950: #0b0908,
+  ),
+  // 藤 (fuji / wisteria) — the accent: a cool jewel violet (hue ≈ 273°). Kept
+  // out of the warm band so it never collides with the scarlet `danger` or the
+  // golden `warning` (whose dark steps both brown out under AAA). Pairs with 桜
+  // in the signature gradient (wisteria → cherry). Emphasis & decoration only.
+  'fuji': (
+    50: #f6f1fb,
+    100: #e9ddf7,
+    200: #d3bbef,
+    300: #ba94e4,
+    400: #9c66d6,
+    500: #8442c6,
+    600: #6e2fab,
+    700: #561f86,
+    800: #3d1560,
+  ),
+  // Sakura (桜) — the soft secondary accent; pairs with fuji in gradients.
+  'sakura': (
+    50: #fff0f4,
+    100: #ffdbe5,
+    200: #ffbace,
+    300: #ff8fad,
+    400: #fb6690,
+    500: #ee4d7a,
+    600: #cf3a64,
+    700: #a02b4d,
+  ),
+  // danger — warm scarlet (緋). Kept clearly red and distinct from the accent.
+  'red': (
+    50: #fcecea,
+    100: #f8c8c3,
+    200: #f08c84,
+    300: #ec7567,
+    500: #d63828,
+    600: #b52e20,
+    700: #8c2417,
+    800: #6d1c12,
+  ),
+  'amber': (
+    50: #fef6e7,
+    100: #fce4ba,
+    300: #f5c25e,
+    500: #e89c0c,
+    600: #c5840a,
+    700: #936207,
+    800: #6f4a05,
+  ),
+  // success — warm leaf green, harmonized with the warm palette.
+  'green': (
+    50: #ecf6ec,
+    100: #cde8cf,
+    300: #5fc379,
+    500: #2f7a43,
+    600: #276739,
+    700: #1d4e2b,
+    800: #163a20,
+  ),
+  // info — calm 藍 (indigo); muted, not electric, so it sits with the warm palette.
+  'blue': (
+    50: #eef0f9,
+    100: #d3d9f0,
+    300: #8ea2db,
+    500: #41549f,
+    600: #36457f,
+    700: #2a3760,
+  ),
+);
+
+// --- Spacing scale (4px base grid) ------------------------------------------
+$spacing: (
+  0: 0,
+  px: 1px,
+  1: fn.rem(4px),
+  2: fn.rem(8px),
+  3: fn.rem(12px),
+  4: fn.rem(16px),
+  5: fn.rem(20px),
+  6: fn.rem(24px),
+  8: fn.rem(32px),
+  10: fn.rem(40px),
+  12: fn.rem(48px),
+  16: fn.rem(64px),
+  20: fn.rem(80px),
+  24: fn.rem(96px),
+);
+
+// --- Border radius ----------------------------------------------------------
+// Friendlier, larger radii are the loudest signal of the soft 彩 (Sai) look.
+$radius: (
+  none: 0,
+  sm: fn.rem(6px),
+  md: fn.rem(10px),
+  lg: fn.rem(14px),
+  xl: fn.rem(20px),
+  '2xl': fn.rem(28px),
+  pill: 9999px,
+  circle: 50%,
+);
+
+// --- Border width -----------------------------------------------------------
+$border-width: (
+  0: 0,
+  thin: 1px,
+  thick: 2px,
+  heavy: 4px,
+);
+
+// --- Typography -------------------------------------------------------------
+// The recommended primary face is LINE Seed (SIL Open Font License 1.1), with a
+// robust system fallback stack so the UI is fully usable before/without the
+// optional web font. We reference the family by name only and do not bundle the
+// files; hosting is opt-in (see fonts.scss and docs/typography.md). "LINE Seed"
+// is a font name owned by its respective rights holders.
+$font-family: (
+  sans: (
+    'LINE Seed JP',
+    'LINE Seed',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Hiragino Sans',
+    'Noto Sans JP',
+    Meiryo,
+    sans-serif,
+  ),
+  mono: (
+    'LINE Seed Mono',
+    ui-monospace,
+    'SFMono-Regular',
+    'Menlo',
+    'Consolas',
+    monospace,
+  ),
+);
+$font-size: (
+  xs: fn.rem(12px),
+  sm: fn.rem(14px),
+  md: fn.rem(16px),
+  lg: fn.rem(18px),
+  xl: fn.rem(20px),
+  '2xl': fn.rem(24px),
+  '3xl': fn.rem(30px),
+  '4xl': fn.rem(36px),
+  '5xl': fn.rem(48px),
+);
+$font-weight: (
+  regular: 400,
+  medium: 500,
+  bold: 700,
+  extrabold: 800,
+);
+
+// Japanese needs more leading than Latin. `relaxed` is the body default;
+// `ja` is for longer reading passages. `tight` is for large display headings.
+$line-height: (
+  tight: 1.2,
+  snug: 1.35,
+  normal: 1.5,
+  relaxed: 1.7,
+  ja: 1.85,
+  loose: 2,
+);
+
+// `ja` opens kana spacing slightly for comfortable Japanese reading; punctuation
+// trimming is left to font-feature-settings: 'palt'.
+$letter-spacing: (
+  tight: -0.01em,
+  normal: 0,
+  wide: 0.02em,
+  ja: 0.02em,
+);
+
+// --- Elevation (shadows) ----------------------------------------------------
+// Soft, diffuse shadows (wide blur, low opacity) — the "ふんわり" elevation
+// that keeps surfaces friendly rather than harsh.
+$shadow: (
+  none: none,
+  sm: (0 1px 2px rgb(0 0 0 / 5%), 0 1px 3px rgb(0 0 0 / 4%)),
+  md: (0 4px 12px rgb(0 0 0 / 6%), 0 2px 6px rgb(0 0 0 / 5%)),
+  lg: (0 12px 28px rgb(0 0 0 / 8%), 0 6px 12px rgb(0 0 0 / 5%)),
+  xl: (0 28px 56px rgb(0 0 0 / 10%), 0 10px 20px rgb(0 0 0 / 6%)),
+);
+
+// --- Motion -----------------------------------------------------------------
+$duration: (
+  instant: 0ms,
+  fast: 120ms,
+  base: 200ms,
+  slow: 320ms,
+);
+$easing: (
+  standard: cubic-bezier(0.2, 0, 0, 1),
+  emphasized: cubic-bezier(0.3, 0, 0, 1),
+  decelerate: cubic-bezier(0, 0, 0, 1),
+  // Accelerating curve for exits (content leaving should feel quicker).
+  accelerate: cubic-bezier(0.3, 0, 1, 1),
+);
+
+// Decorative animation timing. Distinct from the UI micro-transition `$duration`
+// scale (120–320ms): showcase animations (the animate.css-style utilities) want
+// longer, expressive durations. Consumed by `.lily-animate` utilities.
+$animate-duration: (
+  fast: 500ms,
+  base: 800ms,
+  slow: 1200ms,
+  slower: 2000ms,
+);
+$animate-delay: (
+  sm: 200ms,
+  md: 500ms,
+  lg: 1000ms,
+  xl: 2000ms,
+);
+
+// Ambient effect tempo. The `.lily-fx` decorative effects (float, glow, shine,
+// aurora, …) loop continuously, so they want a much calmer, longer cadence than
+// either UI transitions (120–320ms) or the one-shot showcase animations
+// (500–2000ms). One knob — `--lily-fx-duration` — drives every effect; each
+// effect scales this base with `calc()`, so changing it (or picking `lively` /
+// `calm`) speeds up or slows the whole set together.
+$fx-duration: (
+  lively: 2.5s,
+  base: 4s,
+  calm: 7s,
+);
+
+// --- Z-index layers ---------------------------------------------------------
+$z-index: (
+  base: 0,
+  dropdown: 1000,
+  sticky: 1020,
+  fixed: 1030,
+  backdrop: 1040,
+  offcanvas: 1045,
+  modal: 1050,
+  popover: 1060,
+  tooltip: 1070,
+  toast: 1080,
+);
+
+// --- Breakpoints (mobile-first min-widths) ----------------------------------
+$breakpoint: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  '2xl': 1400px,
+);
+
+// --- Component sizing (control heights, etc.) -------------------------------
+$control-height: (
+  sm: fn.rem(32px),
+  md: fn.rem(40px),
+  lg: fn.rem(48px),
+);
+
+// --- Sizes ------------------------------------------------------------------
+// A dedicated scale for component *dimensions* (panel/overlay widths, menu
+// min-widths, tooltip caps). Kept separate from the 4px spacing scale so we
+// never reach for, e.g., `space-24` (96px) to size a modal. Values are rem so
+// they scale with the user's font size, and all are capped with `100%` /
+// viewport units at the usage site to stay responsive on small screens.
+$size: (
+  xs: fn.rem(192px),
+  sm: fn.rem(288px),
+  md: fn.rem(448px),
+  lg: fn.rem(640px),
+  xl: fn.rem(800px),
+);

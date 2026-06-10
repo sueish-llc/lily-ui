@@ -1,0 +1,23 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Collapse — show/hide content with a height transition.
+// -----------------------------------------------------------------------------
+// The React component animates max-height; this provides the transition base.
+// =============================================================================
+
+$root: '.#{cfg.class-name(collapse)}';
+
+#{$root} {
+  overflow: hidden;
+  transition: height var(--#{cfg.$prefix}-collapse-duration, 200ms) ease;
+
+  @include mx.respect-reduced-motion {
+    transition: none;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}

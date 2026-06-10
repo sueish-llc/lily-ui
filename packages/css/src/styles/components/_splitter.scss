@@ -1,0 +1,56 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Splitter — two resizable panes with a draggable divider. The handle is a
+// focusable separator (role="separator") operable by arrow keys; the first
+// pane's size is driven by the --lily-splitter-size custom property.
+// =============================================================================
+
+$root: '.#{cfg.class-name(splitter)}';
+
+#{$root} {
+  --#{cfg.$prefix}-splitter-size: 50%;
+
+  display: flex;
+  inline-size: 100%;
+  block-size: 100%;
+
+  &--vertical {
+    flex-direction: column;
+  }
+
+  &__panel {
+    overflow: auto;
+
+    &--start {
+      flex: 0 0 var(--#{cfg.$prefix}-splitter-size);
+    }
+
+    &--end {
+      flex: 1 1 0;
+    }
+  }
+
+  &__handle {
+    flex: 0 0 auto;
+    inline-size: fn.var-ref('space-2');
+    cursor: col-resize;
+    background-color: fn.var-ref('color-border-default');
+    border: 0;
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:hover {
+      background-color: fn.var-ref('color-primary');
+    }
+
+    @include mx.focus-ring;
+  }
+
+  &--vertical &__handle {
+    inline-size: auto;
+    block-size: fn.var-ref('space-2');
+    cursor: row-resize;
+  }
+}

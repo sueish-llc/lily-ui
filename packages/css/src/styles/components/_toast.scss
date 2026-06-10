@@ -1,0 +1,73 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Toast — a transient notification.
+// =============================================================================
+
+$root: '.#{cfg.class-name(toast)}';
+
+.#{cfg.class-name(toast-region)} {
+  position: fixed;
+  z-index: fn.var-ref('z-toast');
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-2');
+  padding: fn.var-ref('space-4');
+  pointer-events: none;
+
+  &--top-end {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+
+  &--bottom-end {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+  }
+
+  &--bottom-center {
+    inset-block-end: 0;
+    inset-inline: 0;
+    align-items: center;
+  }
+}
+
+#{$root} {
+  display: flex;
+  gap: fn.var-ref('space-3');
+  align-items: flex-start;
+
+  // Comfortable reading width; shrinks to fit the region on small screens
+  // (the region itself is padded away from the viewport edges).
+  width: min(#{fn.var-ref('size-sm')}, calc(100vw - #{fn.var-ref('space-8')}));
+  max-width: 100%;
+  padding: fn.var-ref('space-3') fn.var-ref('space-4');
+  pointer-events: auto;
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-left-width: fn.var-ref('border-heavy');
+  border-left-color: fn.var-ref('color-primary');
+  border-radius: fn.var-ref('radius-md');
+  box-shadow: fn.var-ref('shadow-lg');
+
+  &__body {
+    flex: 1 1 auto;
+  }
+
+  &[data-status='danger'] {
+    border-left-color: fn.var-ref('color-danger');
+  }
+
+  &[data-status='success'] {
+    border-left-color: fn.var-ref('color-success');
+  }
+
+  &[data-status='warning'] {
+    border-left-color: fn.var-ref('color-warning');
+  }
+
+  &[data-status='info'] {
+    border-left-color: fn.var-ref('color-info');
+  }
+}

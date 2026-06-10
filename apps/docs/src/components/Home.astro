@@ -1,0 +1,103 @@
+---
+import { useTranslations, type Locale } from '../i18n/ui';
+import { localePath } from '../i18n/paths';
+import { categoryGroups, components, foundationComponents } from '../registry';
+import { foundations } from '../registry/foundations';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const groups = categoryGroups(locale);
+const GITHUB = 'https://github.com/sueish-llc/lily-ui';
+
+const principles = ['a11y', 'tokens', 'theming', 'ai'] as const;
+// Japanese sentences run together with a full stop; English needs a space.
+const lede = locale === 'ja'
+  ? `${t('site.tagline')}。${t('site.description')}`
+  : `${t('site.tagline')}. ${t('site.description')}`;
+---
+
+<section class="page">
+  <div class="hero">
+    <p class="hero__eyebrow reveal reveal-1">{t('home.hero.eyebrow')}</p>
+    <h1 class="hero__title reveal reveal-2">
+      <span class="accent">Lily UI</span>
+    </h1>
+    <p class="hero__lede reveal reveal-3">{lede}</p>
+    <div class="hero__cta reveal reveal-4">
+      <a class="btn btn--primary" href={localePath(locale, 'components/')}>
+        {t('home.hero.cta.components')}
+      </a>
+      <a class="btn btn--ghost" href={GITHUB} rel="noopener noreferrer" target="_blank">
+        {t('home.hero.cta.github')}
+      </a>
+    </div>
+  </div>
+
+  <section class="section">
+    <h2 class="section__title">{t('home.frameworks.title')}</h2>
+    <p class="section__body">{t('home.frameworks.body')}</p>
+    <div class="comp-frameworks">
+      <span class="fw-badge">React</span>
+      <span class="fw-badge">Vue</span>
+      <span class="fw-badge">Web Components</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section__title">{t('home.principles.title')}</h2>
+    <div class="feature-grid">
+      {
+        principles.map((key) => (
+          <article class="feature">
+            <h3>{t(`home.principles.${key}.title`)}</h3>
+            <p>{t(`home.principles.${key}.body`)}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section__title">
+      {t('home.catalog.title')}
+      <span class="translation-note"> · {components.length}</span>
+    </h2>
+    <div class="catalog__cat">
+      <h3 class="catalog__cat-title">{t('nav.foundations')}</h3>
+      <div class="catalog">
+        {
+          foundations.map((f) => (
+            <a class="cat-card" href={localePath(locale, `foundations/${f.id}/`)}>
+              <span class="cat-card__name">{f.title[locale]}</span>
+            </a>
+          ))
+        }
+        {
+          foundationComponents.map((c) => (
+            <a class="cat-card" href={localePath(locale, `components/${c.id}/`)}>
+              <span class="cat-card__name">{c.displayName}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      groups.map((group) => (
+        <div class="catalog__cat">
+          <h3 class="catalog__cat-title">{group.label}</h3>
+          <div class="catalog">
+            {group.components.map((c) => (
+              <a class="cat-card" href={localePath(locale, `components/${c.id}/`)}>
+                <span class="cat-card__name">{c.displayName}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </section>
+</section>

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
+  },
+  "include": ["src"],
+  // Stories depend on Storybook types and are typechecked by the
+  // @lily-ui/storybook app, which owns those devDependencies.
+  "exclude": ["src/**/*.stories.tsx"]
+}

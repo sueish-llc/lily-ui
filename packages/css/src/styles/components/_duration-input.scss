@@ -1,0 +1,40 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// DurationInput — hours/minutes/(seconds) numeric fields backed by
+// Temporal.Duration. Builds on the number-input tokens for size/focus.
+// Each field is independently accessible: label + input + stepper buttons.
+// =============================================================================
+
+$root: '.#{cfg.class-name(duration-input)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: fn.var-ref('space-1');
+
+  &--sm { font-size: fn.var-ref('text-sm'); }
+  &--lg { font-size: fn.var-ref('text-lg'); }
+
+  &__field-group {
+    display: flex;
+    flex-direction: column;
+    gap: fn.var-ref('space-1');
+  }
+
+  &__label {
+    font-size: fn.var-ref('text-xs');
+    color: fn.var-ref('color-fg-muted');
+    user-select: none;
+  }
+
+  &__sep {
+    align-self: center;
+    padding-bottom: calc(fn.var-ref('control-h-md') / 2);
+    font-size: fn.var-ref('text-lg');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-subtle');
+    line-height: 1;
+  }
+}

@@ -1,0 +1,58 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Meter — a static scalar measurement within a known range (disk usage, score).
+// Distinct from Progress (task completion): uses role="meter". `data-status`
+// recolors the bar; the value/label text conveys meaning beyond color.
+// =============================================================================
+
+$root: '.#{cfg.class-name(meter)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-1');
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    font-size: fn.var-ref('text-sm');
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &__value {
+    font-weight: fn.var-ref('weight-medium');
+    color: fn.var-ref('color-fg-default');
+  }
+
+  &__track {
+    block-size: fn.var-ref('space-2');
+    overflow: hidden;
+    background-color: fn.var-ref('color-bg-subtle');
+    border-radius: fn.var-ref('radius-pill');
+  }
+
+  &__fill {
+    block-size: 100%;
+    background-color: fn.var-ref('color-primary');
+    border-radius: fn.var-ref('radius-pill');
+    transition: inline-size fn.var-ref('duration-base') fn.var-ref('ease-standard');
+
+    &[data-status='success'] {
+      background-color: fn.var-ref('color-success');
+    }
+
+    &[data-status='warning'] {
+      background-color: fn.var-ref('color-warning');
+    }
+
+    &[data-status='danger'] {
+      background-color: fn.var-ref('color-danger');
+    }
+
+    &[data-status='info'] {
+      background-color: fn.var-ref('color-info');
+    }
+  }
+}

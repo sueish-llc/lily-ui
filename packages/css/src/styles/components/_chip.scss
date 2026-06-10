@@ -1,0 +1,103 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Chip / Tag — a compact, optionally interactive token. Unlike Badge (a static
+// count/label), a Chip can be selectable (filter chips) and removable (token
+// input). `data-status` remaps its colors, mirroring the Badge pattern.
+// =============================================================================
+
+$root: '.#{cfg.class-name(chip)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  gap: fn.var-ref('space-1');
+  padding-block: fn.var-ref('space-1');
+  padding-inline: fn.var-ref('space-3');
+  font-size: fn.var-ref('text-sm');
+  font-weight: fn.var-ref('weight-medium');
+  line-height: 1.4;
+  color: fn.var-ref('color-fg-default');
+  white-space: nowrap;
+  background-color: fn.var-ref('color-bg-subtle');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-pill');
+
+  &--sm {
+    padding-inline: fn.var-ref('space-2');
+    font-size: fn.var-ref('text-xs');
+  }
+
+  // Interactive chips (button/anchor roots) react to pointer + keyboard.
+  &--clickable {
+    cursor: pointer;
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-muted');
+    }
+
+    @include mx.focus-ring;
+  }
+
+  // Selected (e.g. active filter): solid status fill, AAA on-fill text.
+  &--selected {
+    color: fn.var-ref('color-on-primary');
+    background-color: fn.var-ref('color-primary');
+    border-color: fn.var-ref('color-primary');
+  }
+
+  &__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: fn.var-ref('text-md');
+    block-size: fn.var-ref('text-md');
+    padding: 0;
+    margin-inline-end: calc(-1 * #{fn.var-ref('space-1')});
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: fn.var-ref('radius-circle');
+    opacity: 0.7;
+    transition: opacity fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    &:hover {
+      opacity: 1;
+    }
+
+    @include mx.focus-ring;
+  }
+
+  // --- status remaps (mirror Badge) -----------------------------------------
+  // The text stays `fg-default` (inherited from the base rule) on the status
+  // tint, so every status clears 7:1 in both themes (AAA 1.4.6). Coloured text
+  // on its own tint can't reach AAA — the tinted background carries the colour.
+  &[data-status='primary'] {
+    background-color: fn.var-ref('color-primary-subtle');
+    border-color: fn.var-ref('color-primary-subtle');
+  }
+
+  &[data-status='danger'] {
+    background-color: fn.var-ref('color-danger-subtle');
+    border-color: fn.var-ref('color-danger-subtle');
+  }
+
+  &[data-status='success'] {
+    background-color: fn.var-ref('color-success-subtle');
+    border-color: fn.var-ref('color-success-subtle');
+  }
+
+  &[data-status='warning'] {
+    background-color: fn.var-ref('color-warning-subtle');
+    border-color: fn.var-ref('color-warning-subtle');
+  }
+
+  &[data-status='info'] {
+    background-color: fn.var-ref('color-info-subtle');
+    border-color: fn.var-ref('color-info-subtle');
+  }
+}

@@ -1,0 +1,25 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Density modes
+// -----------------------------------------------------------------------------
+// The 彩 design system serves both spacious (brand/marketing/app) and dense
+// (SaaS/admin) use cases from one token set. Density is opt-in per subtree via
+// `data-density`, and only re-maps a few sizing vars — components read these
+// vars, so nothing else has to change.
+//
+//   <body>                          → comfortable (the default)
+//   <body data-density="comfortable">
+//   <table data-density="compact">  → compact, scoped to that subtree
+// =============================================================================
+
+[#{cfg.$density-attribute}='compact'] {
+  // Tighter control heights for buttons, inputs, selects, etc.
+  #{cfg.css-var-name('control-h-sm')}: fn.rem(28px);
+  #{cfg.css-var-name('control-h-md')}: fn.rem(34px);
+  #{cfg.css-var-name('control-h-lg')}: fn.rem(40px);
+
+  // Slightly tighter reading rhythm in dense data views.
+  #{cfg.css-var-name('leading-relaxed')}: 1.5;
+}

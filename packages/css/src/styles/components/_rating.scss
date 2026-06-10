@@ -1,0 +1,53 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Rating — a star rating. Interactive ratings use native radio inputs (free
+// grouping + arrow-key support); read-only ratings render a labeled span. The
+// filled state is set with the `--on` modifier (driven by the component), and
+// the accent (藤) color fills the active stars.
+// =============================================================================
+
+$root: '.#{cfg.class-name(rating)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  gap: fn.var-ref('space-1');
+  font-size: fn.var-ref('text-xl');
+  line-height: 1;
+  color: fn.var-ref('color-border-strong');
+
+  &--sm {
+    font-size: fn.var-ref('text-md');
+  }
+
+  &--lg {
+    font-size: fn.var-ref('text-3xl');
+  }
+
+  &__star {
+    display: inline-flex;
+    color: inherit;
+
+    &--on {
+      color: fn.var-ref('color-accent');
+    }
+  }
+
+  // Interactive label wraps a visually-hidden radio + a star glyph.
+  &__label {
+    display: inline-flex;
+    cursor: pointer;
+
+    &:has(input:focus-visible) {
+      border-radius: fn.var-ref('radius-sm');
+      outline: fn.var-ref('border-thick') solid fn.var-ref('color-focus-ring');
+      outline-offset: fn.var-ref('border-thick');
+    }
+
+    &:has(input:disabled) {
+      cursor: not-allowed;
+    }
+  }
+}

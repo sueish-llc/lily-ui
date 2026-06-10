@@ -1,0 +1,274 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Form controls — inputs, textarea, select, field wiring.
+// =============================================================================
+
+$prefix: cfg.$prefix;
+
+// --- Field wrapper (label + control + help/error) ---------------------------
+.#{cfg.class-name(field)} {
+  display: flex;
+  flex-direction: column;
+  gap: fn.var-ref('space-1');
+  margin-bottom: fn.var-ref('space-4');
+}
+
+.#{cfg.class-name(label)} {
+  font-size: fn.var-ref('text-sm');
+  font-weight: fn.var-ref('weight-bold');
+  color: fn.var-ref('color-fg-default');
+
+  &__required {
+    margin-left: fn.var-ref('space-1');
+    color: fn.var-ref('color-danger');
+  }
+}
+
+.#{cfg.class-name(help)} {
+  font-size: fn.var-ref('text-sm');
+  color: fn.var-ref('color-fg-muted');
+}
+
+.#{cfg.class-name(error)} {
+  font-size: fn.var-ref('text-sm');
+  font-weight: fn.var-ref('weight-medium');
+  color: fn.var-ref('color-danger');
+}
+
+// --- Text-like controls -----------------------------------------------------
+%control-base {
+  display: block;
+  width: 100%;
+  height: fn.var-ref('control-h-md');
+  padding: fn.var-ref('space-2') fn.var-ref('space-3');
+  font-family: fn.var-ref('font-sans');
+  font-size: fn.var-ref('text-md');
+  color: fn.var-ref('color-fg-default');
+  background-color: fn.var-ref('color-bg-surface');
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+  border-radius: fn.var-ref('radius-md');
+  transition: border-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+  @include mx.focus-ring;
+
+  &::placeholder {
+    color: fn.var-ref('color-fg-subtle');
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: fn.var-ref('color-bg-subtle');
+    opacity: 0.7;
+  }
+
+  // Invalid state (set via aria-invalid).
+  &[aria-invalid='true'] {
+    border-color: fn.var-ref('color-danger');
+  }
+}
+
+.#{cfg.class-name(input)} {
+  @extend %control-base;
+
+  &--sm {
+    height: fn.var-ref('control-h-sm');
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &--lg {
+    height: fn.var-ref('control-h-lg');
+    font-size: fn.var-ref('text-lg');
+  }
+}
+
+.#{cfg.class-name(textarea)} {
+  @extend %control-base;
+
+  height: auto;
+  min-height: calc(#{fn.var-ref('control-h-md')} * 2);
+  resize: vertical;
+}
+
+.#{cfg.class-name(select)} {
+  @extend %control-base;
+
+  padding-right: fn.var-ref('space-8');
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right fn.var-ref('space-3') center;
+  background-size: fn.var-ref('space-4');
+
+  // Chevron drawn with an inline SVG (uses currentColor via mask not needed).
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b7480' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+// --- Checkbox / radio / switch ---------------------------------------------
+.#{cfg.class-name(check)} {
+  display: inline-flex;
+  gap: fn.var-ref('space-2');
+  align-items: center;
+
+  &__input {
+    width: fn.var-ref('space-5');
+    height: fn.var-ref('space-5');
+    margin: 0;
+    accent-color: fn.var-ref('color-primary');
+    cursor: pointer;
+
+    @include mx.focus-ring;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  &__label {
+    cursor: pointer;
+  }
+}
+
+// Switch: a restyled checkbox.
+.#{cfg.class-name(switch)} {
+  display: inline-flex;
+  gap: fn.var-ref('space-2');
+  align-items: center;
+
+  &__input {
+    position: relative;
+    width: calc(#{fn.var-ref('space-10')});
+    height: fn.var-ref('space-6');
+    appearance: none;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-muted');
+    border-radius: fn.var-ref('radius-pill');
+    transition: background-color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.focus-ring;
+
+    &::before {
+      position: absolute;
+      top: 50%;
+      left: fn.var-ref('space-1');
+      width: fn.var-ref('space-4');
+      height: fn.var-ref('space-4');
+      content: '';
+      background-color: fn.var-ref('color-bg-surface');
+      border-radius: fn.var-ref('radius-circle');
+      transform: translateY(-50%);
+      transition: left fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+    }
+
+    &:checked {
+      background-color: fn.var-ref('color-primary');
+
+      &::before {
+        left: calc(100% - #{fn.var-ref('space-4')} - #{fn.var-ref('space-1')});
+      }
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    @include mx.respect-reduced-motion {
+      &::before {
+        transition: none;
+      }
+    }
+  }
+}
+
+// --- Range ------------------------------------------------------------------
+.#{cfg.class-name(range)} {
+  width: 100%;
+  cursor: pointer;
+  accent-color: fn.var-ref('color-primary');
+
+  @include mx.focus-ring;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// --- Input group ------------------------------------------------------------
+.#{cfg.class-name(input-group)} {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+
+  // Collapse seams between addons and the control.
+  > * {
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: fn.var-ref('radius-md');
+      border-bottom-left-radius: fn.var-ref('radius-md');
+    }
+
+    &:last-child {
+      border-top-right-radius: fn.var-ref('radius-md');
+      border-bottom-right-radius: fn.var-ref('radius-md');
+    }
+
+    &:not(:first-child) {
+      margin-left: calc(-1 * #{fn.var-ref('border-thin')});
+    }
+  }
+
+  &__addon {
+    display: inline-flex;
+    align-items: center;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-muted');
+    white-space: nowrap;
+    background-color: fn.var-ref('color-bg-subtle');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-strong');
+  }
+}
+
+// --- Floating label ---------------------------------------------------------
+.#{cfg.class-name(floating)} {
+  position: relative;
+
+  // The control needs padding to make room for the floated label.
+  > .#{cfg.class-name(input)},
+  > .#{cfg.class-name(textarea)},
+  > .#{cfg.class-name(select)} {
+    padding-top: fn.var-ref('space-5');
+    padding-bottom: fn.var-ref('space-1');
+  }
+
+  > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: fn.var-ref('space-2') fn.var-ref('space-3');
+    color: fn.var-ref('color-fg-subtle');
+    pointer-events: none;
+    transform-origin: 0 0;
+    transition:
+      transform fn.var-ref('duration-fast') fn.var-ref('ease-standard'),
+      color fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+
+    @include mx.respect-reduced-motion {
+      transition: none;
+    }
+  }
+
+  // Float the label when the control has content or focus.
+  > .#{cfg.class-name(input)}:focus + label,
+  > .#{cfg.class-name(input)}:not(:placeholder-shown) + label,
+  > .#{cfg.class-name(textarea)}:focus + label,
+  > .#{cfg.class-name(textarea)}:not(:placeholder-shown) + label,
+  > .#{cfg.class-name(select)}:focus + label,
+  > .#{cfg.class-name(select)} + label {
+    transform: translateY(fn.var-ref('space-1')) scale(0.8);
+  }
+}

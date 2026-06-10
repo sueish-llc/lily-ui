@@ -1,0 +1,70 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Icon — a sizing/color wrapper around an inline SVG or glyph. Lily ships no
+// icon set; this gives a single, predictable way to size and tint any icon
+// using tokens (`currentColor` by default, or a semantic tone via data-tone).
+// =============================================================================
+
+$root: '.#{cfg.class-name(icon)}';
+
+#{$root} {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1em;
+  block-size: 1em;
+  font-size: fn.var-ref('text-md');
+  color: currentcolor;
+  vertical-align: -0.125em;
+
+  > svg {
+    inline-size: 100%;
+    block-size: 100%;
+    fill: currentcolor;
+  }
+
+  &--sm {
+    font-size: fn.var-ref('text-sm');
+  }
+
+  &--lg {
+    font-size: fn.var-ref('text-xl');
+  }
+
+  &--xl {
+    font-size: fn.var-ref('text-3xl');
+  }
+
+  // Semantic tones use the AAA *-text tokens so a standalone icon on a neutral
+  // surface keeps sufficient contrast.
+  &[data-tone='primary'] {
+    color: fn.var-ref('color-primary-text');
+  }
+
+  &[data-tone='accent'] {
+    color: fn.var-ref('color-accent-text');
+  }
+
+  &[data-tone='muted'] {
+    color: fn.var-ref('color-fg-muted');
+  }
+
+  &[data-tone='danger'] {
+    color: fn.var-ref('color-danger-text');
+  }
+
+  &[data-tone='success'] {
+    color: fn.var-ref('color-success-text');
+  }
+
+  &[data-tone='warning'] {
+    color: fn.var-ref('color-warning-text');
+  }
+
+  &[data-tone='info'] {
+    color: fn.var-ref('color-info-text');
+  }
+}

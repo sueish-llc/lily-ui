@@ -1,0 +1,42 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/mixins' as mx;
+@use 'schemes' as s;
+
+// =============================================================================
+// Theme application
+// -----------------------------------------------------------------------------
+// Strategy:
+//   1. :root carries all theme-agnostic primitive variables + the light scheme
+//      as the default, so SSR/SSG output is correct with zero JS.
+//   2. [data-theme="dark"] overrides the semantic color vars.
+//   3. When the consumer makes no explicit choice (no data-theme on <html>),
+//      prefers-color-scheme is honored automatically.
+// =============================================================================
+
+:root {
+  color-scheme: light;
+
+  @include mx.emit-primitive-vars;
+  @include mx.emit-palette-vars;
+  @include mx.emit-vars(s.$light);
+}
+
+:root[#{cfg.$theme-attribute}='dark'] {
+  color-scheme: dark;
+
+  @include mx.emit-vars(s.$dark);
+}
+
+:root[#{cfg.$theme-attribute}='light'] {
+  color-scheme: light;
+
+  @include mx.emit-vars(s.$light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([#{cfg.$theme-attribute}]) {
+    color-scheme: dark;
+
+    @include mx.emit-vars(s.$dark);
+  }
+}

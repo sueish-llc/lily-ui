@@ -1,0 +1,135 @@
+---
+import '@lily-ui/css/styles';
+import '../styles/docs.scss';
+import ThemeScript from '../components/ThemeScript.astro';
+import ThemeToggle from '../islands/ThemeToggle.tsx';
+import HeaderNav from '../islands/HeaderNav.tsx';
+import GitHubIcon from '../components/GitHubIcon.astro';
+import StorybookIcon from '../components/StorybookIcon.astro';
+import { Footer } from '@lily-ui/react';
+import { useTranslations, LOCALES, LOCALE_LABEL, type Locale } from '../i18n/ui';
+import { localePath } from '../i18n/paths';
+import { buildNavGroups } from '../lib/nav';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  /** Locale-relative path of this page (e.g. '' or 'components/button/'). */
+  pagePath?: string;
+}
+
+const { locale, title, description, pagePath = '' } = Astro.props;
+// The mobile hamburger drawer is shown on every page (the landing page
+// included), so always build the component nav it lists. The desktop permanent
+// sidebar is rendered separately by the pages that have one (see Sidebar.astro).
+const navGroups = buildNavGroups(locale);
+const t = useTranslations(locale);
+const fullTitle = title === t('site.name') ? title : `${title} — ${t('site.name')}`;
+const desc = description ?? t('site.description');
+const GITHUB = 'https://github.com/sueish-llc/lily-ui';
+// The header's secondary links live in .site-nav, which is hidden on phones.
+// Surface them inside the mobile drawer so Storybook and GitHub stay reachable.
+const primaryLinks = [
+  { label: t('nav.components'), href: localePath(locale, 'components/') },
+  {
+    label: t('nav.storybook'),
+    href: `${import.meta.env.BASE_URL}storybook/`,
+    icon: 'storybook' as const,
+  },
+  { label: t('nav.github'), href: GITHUB, external: true, icon: 'github' as const },
+];
+const themeLabels = {
+  toggle: t('theme.toggle'),
+  light: t('theme.light'),
+  dark: t('theme.dark'),
+  system: t('theme.system'),
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700;800&display=swap"
+    />
+    <ThemeScript />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">{t('nav.skipToContent')}</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <HeaderNav
+          client:load
+          groups={navGroups}
+          primaryLinks={primaryLinks}
+          labels={{
+            nav: t('nav.components'),
+            menu: t('nav.menu'),
+            search: t('nav.search'),
+            searchEmpty: t('nav.searchEmpty'),
+          }}
+        />
+        <a class="brand" href={localePath(locale)}>
+          <span class="brand__name">{t('site.name')}</span>
+        </a>
+
+        <nav class="site-nav" aria-label={t('nav.components')}>
+          <a href={localePath(locale, 'components/')}>{t('nav.components')}</a>
+          <a class="sb-link" href={`${import.meta.env.BASE_URL}storybook/`}>
+            <StorybookIcon />
+            {t('nav.storybook')}
+          </a>
+          <a class="gh-link" href={GITHUB} rel="noopener noreferrer" target="_blank">
+            <GitHubIcon />
+            {t('nav.github')}
+          </a>
+        </nav>
+
+        <div class="site-header__tools">
+          <div class="lang-switch" role="group" aria-label={t('lang.switch')}>
+            {
+              LOCALES.map((loc) => (
+                <a
+                  href={localePath(loc, pagePath)}
+                  hreflang={loc}
+                  aria-current={loc === locale ? 'true' : undefined}
+                  class="lang-switch__item"
+                >
+                  {LOCALE_LABEL[loc]}
+                </a>
+              ))
+            }
+          </div>
+          <ThemeToggle client:load labels={themeLabels} />
+        </div>
+      </div>
+    </header>
+
+    <slot />
+
+    <Footer className="docs-footer">
+      <p class="docs-footer__note">{t('footer.builtWith')}</p>
+      <p class="docs-footer__legal">
+        <a class="gh-link" href={GITHUB} rel="noopener noreferrer" target="_blank">
+          <GitHubIcon />
+          GitHub
+        </a>
+        <span aria-hidden="true"> · </span>
+        {t('footer.license')}
+      </p>
+    </Footer>
+  </body>
+</html>

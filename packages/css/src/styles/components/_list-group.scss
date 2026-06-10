@@ -1,0 +1,66 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// List group — a flexible series of content items.
+// =============================================================================
+
+$root: '.#{cfg.class-name(list-group)}';
+
+#{$root} {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-radius: fn.var-ref('radius-md');
+
+  &__item {
+    position: relative;
+    padding: fn.var-ref('space-3') fn.var-ref('space-4');
+    color: fn.var-ref('color-fg-default');
+    background-color: fn.var-ref('color-bg-surface');
+    border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+
+    & + & {
+      border-top-width: 0;
+    }
+
+    &:first-child {
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+    }
+
+    &:last-child {
+      border-bottom-right-radius: inherit;
+      border-bottom-left-radius: inherit;
+    }
+
+    &[aria-current='true'],
+    &[aria-selected='true'] {
+      color: fn.var-ref('color-on-primary');
+      background-color: fn.var-ref('color-primary');
+      border-color: fn.var-ref('color-primary');
+    }
+
+    &[aria-disabled='true'] {
+      color: fn.var-ref('color-fg-subtle');
+      pointer-events: none;
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+  }
+
+  // Actionable items (button/anchor) get hover + focus affordances.
+  &__item--action {
+    width: 100%;
+    text-align: inherit;
+    cursor: pointer;
+
+    @include mx.focus-ring;
+
+    &:hover:not([aria-disabled='true'], [aria-current='true']) {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+  }
+}

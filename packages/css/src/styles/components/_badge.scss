@@ -1,0 +1,66 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+
+// =============================================================================
+// Badge — a small count / label pill.
+// -----------------------------------------------------------------------------
+// `data-status` remaps the badge colors, mirroring the Button pattern.
+// =============================================================================
+
+$root: '.#{cfg.class-name(badge)}';
+
+#{$root} {
+  display: inline-flex;
+  align-items: center;
+  gap: fn.var-ref('space-1');
+  padding: fn.var-ref('space-1') fn.var-ref('space-2');
+  font-size: fn.var-ref('text-xs');
+  font-weight: fn.var-ref('weight-bold');
+  line-height: 1;
+  color: fn.var-ref('color-on-primary');
+  white-space: nowrap;
+  background-color: fn.var-ref('color-primary');
+  border-radius: fn.var-ref('radius-sm');
+
+  &--pill {
+    border-radius: fn.var-ref('radius-pill');
+  }
+
+  // Subtle (soft) appearance: neutral text on the status tint so every status
+  // clears 7:1 in both themes (AAA 1.4.6). The colour identity comes from the
+  // tinted background; vivid status text can't reach AAA on its own tint.
+  &--subtle {
+    color: fn.var-ref('color-fg-default');
+    background-color: fn.var-ref('color-primary-subtle');
+  }
+
+  &[data-status='danger'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-danger')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-danger-subtle')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-danger')};
+  }
+
+  &[data-status='success'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-success')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-success-subtle')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-success')};
+  }
+
+  &[data-status='warning'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-warning')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-warning-subtle')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-warning')};
+  }
+
+  &[data-status='info'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-info')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-info-subtle')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-on-info')};
+  }
+
+  &[data-status='neutral'] {
+    --#{cfg.$prefix}-color-primary: #{fn.var-ref('color-fg-muted')};
+    --#{cfg.$prefix}-color-primary-subtle: #{fn.var-ref('color-bg-subtle')};
+    --#{cfg.$prefix}-color-on-primary: #{fn.var-ref('color-bg-surface')};
+  }
+}

@@ -1,0 +1,66 @@
+@use '../abstracts/config' as cfg;
+@use '../abstracts/functions' as fn;
+@use '../abstracts/mixins' as mx;
+
+// =============================================================================
+// Accordion — vertically stacked, collapsible sections.
+// =============================================================================
+
+$root: '.#{cfg.class-name(accordion)}';
+
+#{$root} {
+  border: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  border-radius: fn.var-ref('radius-md');
+
+  &__item + &__item {
+    border-top: fn.var-ref('border-thin') solid fn.var-ref('color-border-default');
+  }
+
+  &__header {
+    margin: 0;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: fn.var-ref('space-4');
+    font-size: fn.var-ref('text-md');
+    font-weight: fn.var-ref('weight-bold');
+    color: fn.var-ref('color-fg-default');
+    text-align: start;
+    cursor: pointer;
+    background-color: fn.var-ref('color-bg-surface');
+    border: 0;
+
+    @include mx.focus-ring;
+
+    &:hover {
+      background-color: fn.var-ref('color-bg-subtle');
+    }
+
+    &[aria-expanded='true'] {
+      color: fn.var-ref('color-primary');
+    }
+
+    &__icon {
+      transition: transform fn.var-ref('duration-fast') fn.var-ref('ease-standard');
+    }
+
+    &[aria-expanded='true'] &__icon {
+      transform: rotate(180deg);
+    }
+
+    @include mx.respect-reduced-motion {
+      &__icon {
+        transition: none;
+      }
+    }
+  }
+
+  &__panel {
+    padding: fn.var-ref('space-4');
+    color: fn.var-ref('color-fg-default');
+  }
+}
